@@ -36,6 +36,8 @@ import CloseChatDialog from './CloseChatDialog';
 import RatingDialog from './RatingDialog';
 import { Chat, Quotation } from '../../types';
 import { respondToQuotation, closeChat } from '../../services/chatService';
+import { createReview } from '../../services/businessService';
+import { dataPersistenceService } from '../../services/dataPersistenceService';
 import { useAuth } from '../../contexts/AuthContext';
 import { useChatMessages } from '../../hooks/useChatMessages';
 import CustomScrollbar from '../common/CustomScrollbar';
@@ -169,8 +171,25 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ chat, otherUser }) => {
 
   const handleRateProvider = async (rating: number, comment: string) => {
     try {
-      // Aquí se implementaría la lógica para guardar la calificación
-      console.log('Rating:', rating, 'Comment:', comment, 'Provider:', otherUser.name);
+      if (!user) return;
+
+      // Buscar el negocio asociado al chat
+      const business = dataPersistenceService.businesses.getAllBusinesses().find(b => b.chatId === chat.id);
+      
+      if (business) {
+        // Crear la reseña
+        await createReview(
+          user.id,
+          chat.proveedorId,
+          business.id,
+          rating,
+          comment
+        );
+        console.log('Reseña creada exitosamente:', { rating, comment, businessId: business.id });
+      } else {
+        console.warn('No se encontró negocio asociado al chat para crear la reseña');
+      }
+
       setRatingDialogOpen(false);
       // Recargar mensajes para ver el estado actualizado
       refreshMessages();

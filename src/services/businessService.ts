@@ -77,3 +77,22 @@ export const getBusinessById = (businessId: string): Business | undefined => {
   return dataPersistenceService.businesses.getBusinessById(businessId) || undefined;
 };
 
+export const getChatStatusForBusiness = (businessId: string): 'active' | 'closed' | 'no_chat' => {
+  const business = dataPersistenceService.businesses.getBusinessById(businessId);
+  if (!business) return 'no_chat';
+  
+  const chat = dataPersistenceService.chats.getChatById(business.chatId);
+  if (!chat) return 'no_chat';
+  
+  // Mapear el estado del chat a los estados que manejamos
+  switch (chat.status) {
+    case 'active':
+      return 'active';
+    case 'closed':
+      return 'closed';
+    case 'deleted':
+    default:
+      return 'no_chat';
+  }
+};
+

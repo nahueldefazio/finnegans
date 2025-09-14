@@ -23,7 +23,7 @@ import {
   Warning as WarningIcon,
 } from '@mui/icons-material';
 import { dataPersistenceService } from '../../services/dataPersistenceService';
-import { initializeSampleData, getDataStats } from '../../services/dataInitializationService';
+import { getDataStats, hasData } from '../../services/dataInitializationService';
 
 interface DiagnosticResult {
   service: string;
@@ -117,19 +117,27 @@ const DataDiagnosticPanel: React.FC = () => {
         });
       }
 
-      // Verificar inicialización
+      // Verificar estado de inicialización (sin inicializar automáticamente)
       try {
-        initializeSampleData();
-        results.push({
-          service: 'inicialización',
-          status: 'success',
-          message: 'Inicialización de datos completada',
-        });
+        const dataExists = hasData();
+        if (dataExists) {
+          results.push({
+            service: 'inicialización',
+            status: 'success',
+            message: 'Datos ya están inicializados',
+          });
+        } else {
+          results.push({
+            service: 'inicialización',
+            status: 'warning',
+            message: 'No hay datos inicializados. Usa el panel de administración para inicializar.',
+          });
+        }
       } catch (error) {
         results.push({
           service: 'inicialización',
           status: 'error',
-          message: `Error en inicialización: ${error}`,
+          message: `Error al verificar inicialización: ${error}`,
         });
       }
 

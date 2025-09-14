@@ -15,6 +15,9 @@ import {
   MenuItem,
   Chip,
   Autocomplete,
+  Skeleton,
+  Fade,
+  Slide,
 } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 import MatchCard from './MatchCard';
@@ -33,6 +36,7 @@ const SearchPage: React.FC = () => {
   const [maxPrice, setMaxPrice] = useState<number | ''>('');
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState('');
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
@@ -68,6 +72,7 @@ const SearchPage: React.FC = () => {
       if (proveedores.length === 0) {
         setError('No hay proveedores disponibles. Ve al panel de administración para inicializar los datos.');
         setLoading(false);
+        setInitialLoading(false);
         return;
       }
 
@@ -93,6 +98,7 @@ const SearchPage: React.FC = () => {
       setError('Error al cargar los servicios. Verifica que los datos estén inicializados.');
     } finally {
       setLoading(false);
+      setInitialLoading(false);
     }
   };
 
@@ -151,160 +157,411 @@ const SearchPage: React.FC = () => {
     setConfirmDialog({ open: false, matchId: '', providerName: '' });
   };
 
-  return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-      <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ mb: 2 }}>
-        Buscar Servicios/Productos
-      </Typography>
-      
-      <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 3 }}>
-        Encuentra los mejores servicios y productos para tu empresa
-      </Typography>
-
-      <DataStatusIndicator onRefresh={loadAllData} />
-
-      <Card sx={{ mb: 3, boxShadow: 3 }}>
-        <CardContent sx={{ p: { xs: 2.5, sm: 3.5 } }}>
-          <Grid container spacing={3}>
-            <Grid xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Buscar por nombre o descripción"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                sx={{ mb: 1.5 }}
-                InputProps={{
-                  startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                }}
-              />
-            </Grid>
-
-            <Grid xs={12} md={6}>
-              <FormControl fullWidth sx={{ mb: 2 }}>
-                <InputLabel>Ubicación</InputLabel>
-                <Select
-                  value={selectedLocation}
-                  onChange={(e) => setSelectedLocation(e.target.value)}
-                  label="Ubicación"
-                >
-                  <MenuItem value="">Todas las ubicaciones</MenuItem>
-                  {allLocations.map((location) => (
-                    <MenuItem key={location} value={location}>
-                      {location}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid xs={12} md={6}>
-              <Autocomplete
-                multiple
-                options={availableServices}
-                value={selectedServices}
-                onChange={(_, newValue) => setSelectedServices(newValue)}
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
-                    <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-                  ))
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Tipos de servicios"
-                    placeholder="Selecciona los tipos de servicios que necesitas"
-                    sx={{ mb: 1.5 }}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Presupuesto máximo (USD)"
-                type="number"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value ? Number(e.target.value) : '')}
-                sx={{ mb: 1.5 }}
-                InputProps={{
-                  startAdornment: <Typography sx={{ mr: 1 }}>$</Typography>,
-                }}
-              />
-            </Grid>
-
-            <Grid xs={12}>
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={handleSearch}
-                  disabled={loading}
-                  startIcon={loading ? <CircularProgress size={20} /> : <SearchIcon />}
-                  sx={{ minWidth: 200, py: 1.5 }}
-                >
-                  {loading ? 'Buscando...' : 'Buscar Servicios'}
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-
-      {error && (
-        <Alert 
-          severity="error" 
-          sx={{ mb: 3 }}
-          action={
-            error.includes('inicializar') ? (
-              <Button
-                color="inherit"
-                size="small"
-                onClick={() => navigate('/admin/data')}
-              >
-                Ir a Administración
-              </Button>
-            ) : null
-          }
-        >
-          {error}
-        </Alert>
-      )}
-
-      {matches.length > 0 && (
-        <Box sx={{ mt: 1 }}>
-          <Typography variant="h5" gutterBottom sx={{ mb: 2 }}>
-            Servicios Disponibles ({matches.length} opciones encontradas)
-          </Typography>
-          
-          {matches.map((match) => {
-            const proveedor = getProveedorById(match.proveedorId);
-            if (!proveedor) return null;
-            
-            return (
-              <MatchCard
-                key={match.id}
-                match={match}
-                proveedor={proveedor}
-                onContact={handleContact}
-              />
-            );
-          })}
+  if (initialLoading) {
+    return (
+      <Box sx={{ 
+        maxWidth: 1200, 
+        mx: 'auto',
+        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(139, 92, 246, 0.02) 100%)',
+        minHeight: '100vh',
+        p: 3,
+      }}>
+        <Box sx={{ textAlign: 'center', mb: 5 }}>
+          <Skeleton variant="text" width="60%" height={80} sx={{ mx: 'auto', mb: 3 }} />
+          <Skeleton variant="text" width="40%" height={40} sx={{ mx: 'auto', mb: 4 }} />
         </Box>
-      )}
-
-      {!loading && matches.length === 0 && (
-        <Card>
-          <CardContent sx={{ textAlign: 'center', py: 6 }}>
-            <Typography variant="h6" color="text.secondary" gutterBottom>
-              No se encontraron servicios
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Intenta ajustar tus criterios de búsqueda o contacta con nosotros
-            </Typography>
+        
+        <Card sx={{ 
+          mb: 4, 
+          borderRadius: 3,
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%)',
+          backdropFilter: 'blur(10px)',
+        }}>
+          <CardContent sx={{ p: { xs: 3, sm: 4, md: 5 } }}>
+            <Grid container spacing={4}>
+              {[1, 2, 3, 4].map((item) => (
+                <Grid xs={12} md={6} key={item}>
+                  <Skeleton variant="rounded" height={56} />
+                </Grid>
+              ))}
+              <Grid xs={12}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                  <Skeleton variant="rounded" width={250} height={56} />
+                </Box>
+              </Grid>
+            </Grid>
           </CardContent>
         </Card>
-      )}
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ 
+      maxWidth: 1200, 
+      mx: 'auto',
+      background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(139, 92, 246, 0.02) 100%)',
+      minHeight: '100vh',
+      p: 3,
+    }}>
+      <Fade in timeout={800}>
+        <Box sx={{ textAlign: 'center', mb: 5 }}>
+          <Typography 
+            variant="h3" 
+            component="h1" 
+            gutterBottom
+            sx={{ 
+              mb: 3,
+              fontWeight: 700,
+              background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            🔍 Buscar Servicios/Productos
+          </Typography>
+          
+          <Typography 
+            variant="h6" 
+            color="text.secondary" 
+            sx={{ 
+              mb: 4,
+              lineHeight: 1.6,
+              maxWidth: 600,
+              mx: 'auto',
+            }}
+          >
+            Encuentra los mejores servicios y productos para tu empresa
+          </Typography>
+        </Box>
+      </Fade>
+
+      <Slide direction="up" in timeout={1000}>
+        <Box>
+          <DataStatusIndicator onRefresh={loadAllData} />
+
+          <Card sx={{ 
+            mb: 4, 
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+          }}>
+            <CardContent sx={{ p: { xs: 3, sm: 4, md: 5 } }}>
+              <Grid container spacing={4}>
+                <Grid xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Buscar por nombre o descripción"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 2.5,
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        '&:hover': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.15)',
+                        },
+                        '&.Mui-focused': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 8px 25px rgba(99, 102, 241, 0.25)',
+                        },
+                      },
+                    }}
+                    InputProps={{
+                      startAdornment: <SearchIcon sx={{ mr: 1.5, color: 'primary.main' }} />,
+                    }}
+                  />
+                </Grid>
+
+                <Grid xs={12} md={6}>
+                  <FormControl 
+                    fullWidth
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 2.5,
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        '&:hover': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.15)',
+                        },
+                        '&.Mui-focused': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 8px 25px rgba(99, 102, 241, 0.25)',
+                        },
+                      },
+                    }}
+                  >
+                    <InputLabel>📍 Ubicación</InputLabel>
+                    <Select
+                      value={selectedLocation}
+                      onChange={(e) => setSelectedLocation(e.target.value)}
+                      label="📍 Ubicación"
+                    >
+                      <MenuItem value="">Todas las ubicaciones</MenuItem>
+                      {allLocations.map((location) => (
+                        <MenuItem key={location} value={location}>
+                          {location}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid xs={12} md={6}>
+                  <Autocomplete
+                    multiple
+                    options={availableServices}
+                    value={selectedServices}
+                    onChange={(_, newValue) => setSelectedServices(newValue)}
+                    renderTags={(value, getTagProps) =>
+                      value.map((option, index) => (
+                        <Chip 
+                          variant="outlined" 
+                          label={option} 
+                          {...getTagProps({ index })}
+                          sx={{
+                            borderRadius: 2,
+                            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)',
+                            border: '1px solid rgba(99, 102, 241, 0.3)',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                            '&:hover': {
+                              transform: 'scale(1.05)',
+                              boxShadow: '0 4px 12px rgba(99, 102, 241, 0.2)',
+                            },
+                          }}
+                        />
+                      ))
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="🛠️ Tipos de servicios"
+                        placeholder="Selecciona los tipos de servicios que necesitas"
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2.5,
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                            '&:hover': {
+                              transform: 'translateY(-2px)',
+                              boxShadow: '0 4px 12px rgba(99, 102, 241, 0.15)',
+                            },
+                            '&.Mui-focused': {
+                              transform: 'translateY(-2px)',
+                              boxShadow: '0 8px 25px rgba(99, 102, 241, 0.25)',
+                            },
+                          },
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="💰 Presupuesto máximo (USD)"
+                    type="number"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value ? Number(e.target.value) : '')}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 2.5,
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        '&:hover': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.15)',
+                        },
+                        '&.Mui-focused': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 8px 25px rgba(99, 102, 241, 0.25)',
+                        },
+                      },
+                    }}
+                    InputProps={{
+                      startAdornment: (
+                        <Typography 
+                          sx={{ 
+                            mr: 1.5, 
+                            fontWeight: 600,
+                            color: 'primary.main',
+                            fontSize: '1.1rem',
+                          }}
+                        >
+                          $
+                        </Typography>
+                      ),
+                    }}
+                  />
+                </Grid>
+
+                <Grid xs={12}>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      onClick={handleSearch}
+                      disabled={loading}
+                      startIcon={loading ? <CircularProgress size={24} color="inherit" /> : <SearchIcon />}
+                      sx={{ 
+                        minWidth: 250, 
+                        py: 2,
+                        px: 4,
+                        borderRadius: 3,
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        fontSize: '1.1rem',
+                        background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        '&:hover': {
+                          transform: 'translateY(-3px)',
+                          boxShadow: '0 12px 30px rgba(99, 102, 241, 0.4)',
+                          background: 'linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%)',
+                        },
+                        '&:active': {
+                          transform: 'translateY(-1px)',
+                        },
+                        '&:disabled': {
+                          background: 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)',
+                          transform: 'none',
+                          boxShadow: 'none',
+                        },
+                      }}
+                    >
+                      {loading ? '🔍 Buscando...' : '🔍 Buscar Servicios'}
+                    </Button>
+                  </Box>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+
+          {error && (
+            <Fade in timeout={500}>
+              <Alert 
+                severity="error" 
+                sx={{ 
+                  mb: 4,
+                  borderRadius: 3,
+                  boxShadow: '0 4px 12px rgba(239, 68, 68, 0.15)',
+                }}
+                action={
+                  error.includes('inicializar') ? (
+                    <Button
+                      color="inherit"
+                      size="small"
+                      onClick={() => navigate('/admin/data')}
+                      sx={{
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 600,
+                      }}
+                    >
+                      Ir a Administración
+                    </Button>
+                  ) : null
+                }
+              >
+                {error}
+              </Alert>
+            </Fade>
+          )}
+
+          {matches.length > 0 && (
+            <Fade in timeout={800}>
+              <Box sx={{ mt: 2 }}>
+                <Typography 
+                  variant="h4" 
+                  gutterBottom 
+                  sx={{ 
+                    mb: 4,
+                    textAlign: 'center',
+                    fontWeight: 700,
+                    background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}
+                >
+                  🎯 Servicios Disponibles ({matches.length} opciones encontradas)
+                </Typography>
+                
+                {matches.map((match, index) => {
+                  const proveedor = getProveedorById(match.proveedorId);
+                  if (!proveedor) return null;
+                  
+                  return (
+                    <Slide 
+                      key={match.id} 
+                      direction="up" 
+                      in 
+                      timeout={600 + (index * 100)}
+                    >
+                      <Box sx={{ mb: 3 }}>
+                        <MatchCard
+                          match={match}
+                          proveedor={proveedor}
+                          onContact={handleContact}
+                        />
+                      </Box>
+                    </Slide>
+                  );
+                })}
+              </Box>
+            </Fade>
+          )}
+
+          {!loading && matches.length === 0 && (
+            <Fade in timeout={600}>
+              <Card sx={{
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%)',
+                backdropFilter: 'blur(10px)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+              }}>
+                <CardContent sx={{ 
+                  textAlign: 'center', 
+                  py: 8, 
+                  px: 4,
+                  background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(139, 92, 246, 0.02) 100%)',
+                }}>
+                  <Typography 
+                    variant="h5" 
+                    color="text.secondary" 
+                    gutterBottom
+                    sx={{ 
+                      mb: 3,
+                      fontWeight: 600,
+                      background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                      backgroundClip: 'text',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    }}
+                  >
+                    🔍 No se encontraron servicios
+                  </Typography>
+                  <Typography 
+                    variant="body1" 
+                    color="text.secondary"
+                    sx={{ 
+                      lineHeight: 1.6,
+                      maxWidth: 400,
+                      mx: 'auto',
+                    }}
+                  >
+                    Intenta ajustar tus criterios de búsqueda o contacta con nosotros
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Fade>
+          )}
+        </Box>
+      </Slide>
 
       <ConfirmDialog
         open={confirmDialog.open}

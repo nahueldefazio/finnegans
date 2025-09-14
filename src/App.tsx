@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import Layout from './components/layout/Layout';
-import { initializeSampleData } from './services/dataInitializationService';
 
 // Pages
 import LoginPage from './pages/LoginPage';
@@ -229,15 +228,15 @@ const theme = createTheme({
 });
 
 function App() {
-  // Inicializar datos de ejemplo al cargar la aplicación
-  useEffect(() => {
-    // Solo inicializar si no hay datos existentes
-    try {
-      initializeSampleData();
-    } catch (error) {
-      console.error('Error al inicializar datos:', error);
-    }
-  }, []);
+  // NO inicializar datos automáticamente - solo cuando el usuario lo solicite
+  // useEffect(() => {
+  //   // Solo inicializar si no hay datos existentes
+  //   try {
+  //     initializeSampleData();
+  //   } catch (error) {
+  //     console.error('Error al inicializar datos:', error);
+  //   }
+  // }, []);
 
   return (
     <ThemeProvider theme={theme}>

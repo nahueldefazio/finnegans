@@ -81,6 +81,19 @@ const CloseChatDialog: React.FC<CloseChatDialogProps> = ({
         sx: {
           borderRadius: 3,
           boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%)',
+          backdropFilter: 'blur(10px)',
+          animation: 'dialogSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          '@keyframes dialogSlideIn': {
+            '0%': {
+              opacity: 0,
+              transform: 'scale(0.9) translateY(-20px)',
+            },
+            '100%': {
+              opacity: 1,
+              transform: 'scale(1) translateY(0)',
+            },
+          },
         },
       }}
     >
@@ -174,7 +187,7 @@ const CloseChatDialog: React.FC<CloseChatDialogProps> = ({
             </Box>
           )}
 
-          {reason === 'satisfactorio' && (
+          {(reason === 'satisfactorio' || reason === 'completado') && (
             <Box sx={{ mb: 2 }}>
               <Typography variant="subtitle2" gutterBottom>
                 ¿Te gustaría calificar la experiencia?

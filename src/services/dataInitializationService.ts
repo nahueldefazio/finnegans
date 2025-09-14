@@ -842,45 +842,45 @@ export const initializeSampleData = (): void => {
       }
     });
 
-    // Guardar chats
-    sampleChats.forEach(chat => {
-      try {
-        // Crear chat sin los campos que se generan automáticamente
-        const { id, createdAt, updatedAt, ...chatData } = chat;
-        dataPersistenceService.chats.createChat(chatData);
-      } catch (error) {
-        console.error('Error al crear chat:', chat.id, error);
-      }
-    });
+    // No crear chats automáticamente - se crearán cuando el usuario envíe mensajes
+    // sampleChats.forEach(chat => {
+    //   try {
+    //     // Crear chat sin los campos que se generan automáticamente
+    //     const { id, createdAt, updatedAt, ...chatData } = chat;
+    //     dataPersistenceService.chats.createChat(chatData);
+    //   } catch (error) {
+    //     console.error('Error al crear chat:', chat.id, error);
+    //   }
+    // });
 
-    // Guardar mensajes
-    sampleMessages.forEach(message => {
-      try {
-        // Crear mensaje sin los campos que se generan automáticamente
-        const { id, timestamp, ...messageData } = message;
-        dataPersistenceService.messages.createMessage(messageData);
-      } catch (error) {
-        console.error('Error al crear mensaje:', message.id, error);
-      }
-    });
+    // No crear mensajes automáticamente - se crearán cuando el usuario envíe mensajes
+    // sampleMessages.forEach(message => {
+    //   try {
+    //     // Crear mensaje sin los campos que se generan automáticamente
+    //     const { id, timestamp, ...messageData } = message;
+    //     dataPersistenceService.messages.createMessage(messageData);
+    //   } catch (error) {
+    //     console.error('Error al crear mensaje:', message.id, error);
+    //   }
+    // });
 
-    // Guardar negocios
-    sampleBusinesses.forEach(business => {
-      try {
-        dataPersistenceService.businesses.createBusiness(business);
-      } catch (error) {
-        console.error('Error al crear negocio:', business.id, error);
-      }
-    });
+    // No crear negocios automáticamente - se crearán cuando se acepten cotizaciones
+    // sampleBusinesses.forEach(business => {
+    //   try {
+    //     dataPersistenceService.businesses.createBusiness(business);
+    //   } catch (error) {
+    //     console.error('Error al crear negocio:', business.id, error);
+    //   }
+    // });
 
-    // Guardar reseñas
-    sampleReviews.forEach(review => {
-      try {
-        dataPersistenceService.reviews.createReview(review);
-      } catch (error) {
-        console.error('Error al crear reseña:', review.id, error);
-      }
-    });
+    // No crear reseñas automáticamente - se crearán cuando se completen proyectos
+    // sampleReviews.forEach(review => {
+    //   try {
+    //     dataPersistenceService.reviews.createReview(review);
+    //   } catch (error) {
+    //     console.error('Error al crear reseña:', review.id, error);
+    //   }
+    // });
 
     console.log('Datos de ejemplo inicializados correctamente');
   } catch (error) {
@@ -918,6 +918,85 @@ export const initializeChatsAndMessages = (): void => {
     console.log('Chats y mensajes de ejemplo inicializados correctamente');
   } catch (error) {
     console.error('Error al inicializar chats y mensajes:', error);
+  }
+};
+
+// Función para crear chats de ejemplo con diferentes estados
+export const createSampleChatsWithStatus = (): void => {
+  try {
+    console.log('Creando chats de ejemplo con diferentes estados...');
+
+    // Chat activo
+    const activeChat = dataPersistenceService.chats.createChat({
+      pymeId: '1',
+      proveedorId: 'prov1',
+      matchId: 'match_active',
+    });
+    dataPersistenceService.chats.updateChat(activeChat.id, {
+      status: 'active',
+    });
+
+    // Chat cerrado
+    const closedChat = dataPersistenceService.chats.createChat({
+      pymeId: '1',
+      proveedorId: 'prov2',
+      matchId: 'match_closed',
+    });
+    dataPersistenceService.chats.updateChat(closedChat.id, {
+      status: 'closed',
+      closedAt: new Date().toISOString(),
+      closeReason: 'Proyecto completado',
+    });
+
+    // Crear negocios asociados a estos chats
+    dataPersistenceService.businesses.createBusiness({
+      chatId: activeChat.id,
+      pymeId: '1',
+      proveedorId: 'prov1',
+      quotationId: 'quote_active',
+      status: 'in_progress',
+      totalAmount: 5000,
+      currency: 'USD',
+      startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
+    });
+
+    dataPersistenceService.businesses.createBusiness({
+      chatId: closedChat.id,
+      pymeId: '1',
+      proveedorId: 'prov2',
+      quotationId: 'quote_closed',
+      status: 'completed',
+      totalAmount: 3000,
+      currency: 'USD',
+      startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
+      endDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+    });
+
+    console.log('Chats de ejemplo con estados creados correctamente');
+  } catch (error) {
+    console.error('Error al crear chats de ejemplo:', error);
+  }
+};
+
+// Función para limpiar solo chats y mensajes
+export const clearChatsAndMessages = (): void => {
+  try {
+    dataPersistenceService.cleanup.clearDataByType('CHATS');
+    dataPersistenceService.cleanup.clearDataByType('CHAT_MESSAGES');
+    console.log('Chats y mensajes han sido eliminados');
+  } catch (error) {
+    console.error('Error al limpiar chats y mensajes:', error);
+  }
+};
+
+// Función para limpiar solo negocios y reseñas
+export const clearBusinessesAndReviews = (): void => {
+  try {
+    dataPersistenceService.cleanup.clearDataByType('BUSINESSES');
+    dataPersistenceService.cleanup.clearDataByType('REVIEWS');
+    console.log('Negocios y reseñas han sido eliminados');
+  } catch (error) {
+    console.error('Error al limpiar negocios y reseñas:', error);
   }
 };
 
@@ -974,6 +1053,9 @@ export const getDataStats = (): Record<string, number> => {
 export default {
   initializeSampleData,
   initializeChatsAndMessages,
+  createSampleChatsWithStatus,
+  clearChatsAndMessages,
+  clearBusinessesAndReviews,
   clearAllData,
   exportData,
   importData,

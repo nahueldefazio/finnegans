@@ -12,6 +12,7 @@ import {
   Avatar,
   Grid,
   Chip,
+  Alert,
 } from '@mui/material';
 import { Star as StarIcon, Close as CloseIcon } from '@mui/icons-material';
 
@@ -33,19 +34,33 @@ const RatingDialog: React.FC<RatingDialogProps> = ({
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState('');
   const [hover, setHover] = useState<number>(-1);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (rating > 0) {
-      onRate(rating, comment);
-      setRating(0);
-      setComment('');
-      onClose();
+      setLoading(true);
+      try {
+        await onRate(rating, comment);
+        setSuccess(true);
+        setTimeout(() => {
+          setRating(0);
+          setComment('');
+          setSuccess(false);
+          onClose();
+        }, 1500);
+      } catch (error) {
+        console.error('Error submitting rating:', error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const handleClose = () => {
     setRating(0);
     setComment('');
+    setSuccess(false);
     onClose();
   };
 
@@ -76,6 +91,19 @@ const RatingDialog: React.FC<RatingDialogProps> = ({
         sx: {
           borderRadius: 3,
           boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%)',
+          backdropFilter: 'blur(10px)',
+          animation: 'dialogSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          '@keyframes dialogSlideIn': {
+            '0%': {
+              opacity: 0,
+              transform: 'scale(0.9) translateY(-20px)',
+            },
+            '100%': {
+              opacity: 1,
+              transform: 'scale(1) translateY(0)',
+            },
+          },
         },
       }}
     >
@@ -102,109 +130,121 @@ const RatingDialog: React.FC<RatingDialogProps> = ({
       </DialogTitle>
       
       <DialogContent sx={{ pt: 2 }}>
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
-            ¿Cómo calificarías tu experiencia con este proveedor?
-          </Typography>
-          
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-            <Rating
-              name="provider-rating"
-              value={rating}
-              onChange={(event, newValue) => {
-                setRating(newValue || 0);
-              }}
-              onChangeActive={(event, newHover) => {
-                setHover(newHover);
-              }}
-              size="large"
-              sx={{
-                '& .MuiRating-iconFilled': {
-                  color: rating >= 4 ? '#10b981' : rating >= 3 ? '#f59e0b' : '#ef4444',
-                },
-                '& .MuiRating-iconHover': {
-                  color: (hover || rating) >= 4 ? '#10b981' : (hover || rating) >= 3 ? '#f59e0b' : '#ef4444',
-                },
-              }}
-            />
-            {rating > 0 && (
-              <Chip
-                label={getRatingText(rating)}
-                color={getRatingColor(rating) as any}
-                variant="outlined"
-                size="small"
-              />
-            )}
+        {success ? (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            ¡Calificación enviada exitosamente! La reseña aparecerá en la sección de Negocios.
+          </Alert>
+        ) : (
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
+              ¿Cómo calificarías tu experiencia con este proveedor?
+            </Typography>
           </Box>
-        </Box>
+        )}
 
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle2" gutterBottom>
-            Comentario (opcional)
-          </Typography>
-          <TextField
-            fullWidth
-            multiline
-            rows={3}
-            placeholder="Comparte tu experiencia con este proveedor..."
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            variant="outlined"
-            sx={{
-              '& .MuiOutlinedInput-root': {
+        {!success && (
+          <>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <Rating
+                name="provider-rating"
+                value={rating}
+                onChange={(event, newValue) => {
+                  setRating(newValue || 0);
+                }}
+                onChangeActive={(event, newHover) => {
+                  setHover(newHover);
+                }}
+                size="large"
+                sx={{
+                  '& .MuiRating-iconFilled': {
+                    color: rating >= 4 ? '#10b981' : rating >= 3 ? '#f59e0b' : '#ef4444',
+                  },
+                  '& .MuiRating-iconHover': {
+                    color: (hover || rating) >= 4 ? '#10b981' : (hover || rating) >= 3 ? '#f59e0b' : '#ef4444',
+                  },
+                }}
+              />
+              {rating > 0 && (
+                <Chip
+                  label={getRatingText(rating)}
+                  color={getRatingColor(rating) as any}
+                  variant="outlined"
+                  size="small"
+                />
+              )}
+            </Box>
+
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle2" gutterBottom>
+                Comentario (opcional)
+              </Typography>
+              <TextField
+                fullWidth
+                multiline
+                rows={3}
+                placeholder="Comparte tu experiencia con este proveedor..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                variant="outlined"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                  },
+                }}
+              />
+            </Box>
+
+            <Box
+              sx={{
+                p: 2,
+                bgcolor: 'grey.50',
                 borderRadius: 2,
-              },
-            }}
-          />
-        </Box>
-
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: 'grey.50',
-            borderRadius: 2,
-            border: '1px solid',
-            borderColor: 'grey.200',
-          }}
-        >
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            💡 Tu calificación ayudará a otros usuarios a tomar mejores decisiones
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Las calificaciones son públicas y se mostrarán en el perfil del proveedor
-          </Typography>
-        </Box>
+                border: '1px solid',
+                borderColor: 'grey.200',
+              }}
+            >
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                💡 Tu calificación ayudará a otros usuarios a tomar mejores decisiones
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Las calificaciones son públicas y se mostrarán en el perfil del proveedor
+              </Typography>
+            </Box>
+          </>
+        )}
       </DialogContent>
       
-      <DialogActions sx={{ p: 3, pt: 1 }}>
-        <Button
-          onClick={handleClose}
-          variant="outlined"
-          startIcon={<CloseIcon />}
-          sx={{ minWidth: 120 }}
-        >
-          Cancelar
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          disabled={rating === 0}
-          startIcon={<StarIcon />}
-          sx={{ 
-            minWidth: 120,
-            background: rating >= 4 ? 'linear-gradient(135deg, #10b981 0%, #34d399 100%)' :
-                       rating >= 3 ? 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)' :
-                       'linear-gradient(135deg, #ef4444 0%, #f87171 100%)',
-            '&:hover': {
-              background: rating >= 4 ? 'linear-gradient(135deg, #059669 0%, #10b981 100%)' :
-                         rating >= 3 ? 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)' :
-                         'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
-            },
-          }}
-        >
-          Enviar Calificación
-        </Button>
-      </DialogActions>
+      {!success && (
+        <DialogActions sx={{ p: 3, pt: 1 }}>
+          <Button
+            onClick={handleClose}
+            variant="outlined"
+            startIcon={<CloseIcon />}
+            sx={{ minWidth: 120 }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={rating === 0 || loading}
+            startIcon={<StarIcon />}
+            sx={{ 
+              minWidth: 120,
+              background: rating >= 4 ? 'linear-gradient(135deg, #10b981 0%, #34d399 100%)' :
+                         rating >= 3 ? 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)' :
+                         'linear-gradient(135deg, #ef4444 0%, #f87171 100%)',
+              '&:hover': {
+                background: rating >= 4 ? 'linear-gradient(135deg, #059669 0%, #10b981 100%)' :
+                           rating >= 3 ? 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)' :
+                           'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
+              },
+            }}
+          >
+            {loading ? 'Enviando...' : 'Enviar Calificación'}
+          </Button>
+        </DialogActions>
+      )}
     </Dialog>
   );
 };

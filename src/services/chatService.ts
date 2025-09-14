@@ -1,5 +1,6 @@
 import { Chat, ChatMessage, Quotation } from '../types/index';
 import { dataPersistenceService } from './dataPersistenceService';
+import { createBusiness, updateBusinessStatus } from './businessService';
 
 export const getChatsByUserId = async (userId: string): Promise<Chat[]> => {
   // Simular delay de API
@@ -43,6 +44,21 @@ export const sendMessage = async (
       matchId: chatId, // Usar chatId como matchId temporal
     });
     console.log('Chat creado automáticamente:', chat.id);
+    
+    // Crear negocio automáticamente cuando se crea un chat
+    try {
+      await createBusiness(
+        chat.id,
+        senderId,
+        'unknown',
+        `quote_${chat.id}`,
+        0, // Monto inicial 0, se actualizará cuando se envíe cotización
+        'USD'
+      );
+      console.log('Negocio creado automáticamente para el chat:', chat.id);
+    } catch (error) {
+      console.error('Error al crear negocio automáticamente:', error);
+    }
   }
   
   const newMessage = dataPersistenceService.messages.createMessage({
@@ -94,6 +110,21 @@ export const createChat = async (
     updatedAt: new Date().toISOString(),
   });
 
+  // Crear negocio automáticamente cuando se crea un chat
+  try {
+    await createBusiness(
+      newChat.id,
+      pymeId,
+      proveedorId,
+      `quote_${newChat.id}`,
+      0, // Monto inicial 0, se actualizará cuando se envíe cotización
+      'USD'
+    );
+    console.log('Negocio creado automáticamente para el chat:', newChat.id);
+  } catch (error) {
+    console.error('Error al crear negocio automáticamente:', error);
+  }
+
   return newChat;
 };
 
@@ -137,6 +168,23 @@ export const closeChat = async (
     closeComment: comment,
     updatedAt: new Date().toISOString(),
   });
+
+  // Actualizar el negocio asociado a estado "completed"
+  try {
+    const chat = dataPersistenceService.chats.getChatById(chatId);
+    if (chat) {
+      // Buscar el negocio asociado al chat
+      const allBusinesses = dataPersistenceService.businesses.getAllBusinesses();
+      const business = allBusinesses.find(b => b.chatId === chatId);
+      
+      if (business) {
+        await updateBusinessStatus(business.id, 'completed', new Date().toISOString());
+        console.log('Negocio marcado como completado al cerrar el chat:', business.id);
+      }
+    }
+  } catch (error) {
+    console.error('Error al actualizar negocio al cerrar chat:', error);
+  }
 };
 
 export const deleteChat = async (chatId: string): Promise<void> => {
