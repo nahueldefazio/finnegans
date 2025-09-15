@@ -18,7 +18,9 @@ import {
 import { useNavigate } from 'react-router-dom';
 import {
   initializeSampleData,
+  initializeServicesAndProducts,
   clearAllData,
+  clearSampleProveedores,
   exportData,
   importData,
   hasData,
@@ -59,6 +61,27 @@ const DataManagementPanel: React.FC = () => {
       setAlert({ type: 'success', message: 'Todos los datos han sido eliminados' });
     } catch (error) {
       setAlert({ type: 'error', message: 'Error al eliminar datos' });
+    }
+  };
+
+  const handleClearSampleProveedores = () => {
+    try {
+      clearSampleProveedores();
+      updateStats();
+      setAlert({ type: 'success', message: 'Proveedores de ejemplo eliminados correctamente' });
+    } catch (error) {
+      setAlert({ type: 'error', message: 'Error al limpiar proveedores de ejemplo' });
+    }
+  };
+
+  const handleInitializeServices = async () => {
+    try {
+      setAlert({ type: 'success', message: 'Inicializando servicios y productos...' });
+      await initializeServicesAndProducts();
+      updateStats();
+      setAlert({ type: 'success', message: 'Servicios y productos inicializados correctamente' });
+    } catch (error) {
+      setAlert({ type: 'error', message: 'Error al inicializar servicios y productos' });
     }
   };
 
@@ -195,6 +218,35 @@ const DataManagementPanel: React.FC = () => {
                   </Button>
                   <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
                     Elimina todos los datos almacenados
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                  <Button
+                    variant="outlined"
+                    color="warning"
+                    fullWidth
+                    onClick={handleClearSampleProveedores}
+                    disabled={stats.proveedores === 0}
+                  >
+                    Limpiar Proveedores de Ejemplo
+                  </Button>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                    Elimina solo los proveedores de demostración
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                  <Button
+                    variant="outlined"
+                    color="success"
+                    fullWidth
+                    onClick={handleInitializeServices}
+                  >
+                    Inicializar Servicios/Productos
+                  </Button>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                    Agrega servicios y productos de ejemplo
                   </Typography>
                 </Grid>
 

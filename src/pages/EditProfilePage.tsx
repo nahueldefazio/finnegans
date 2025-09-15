@@ -102,6 +102,18 @@ const EditProfilePage: React.FC = () => {
     });
   };
 
+  const handleBudgetChange = (field: 'min' | 'max', value: number) => {
+    if (!profile || !isPyME) return;
+
+    setProfile({
+      ...profile,
+      budget: {
+        ...profile.budget,
+        [field]: value,
+      },
+    });
+  };
+
   const handleContactInfoChange = (field: string, value: string) => {
     if (!profile) return;
 
@@ -276,9 +288,12 @@ const EditProfilePage: React.FC = () => {
                     value={profile.serviceTypes || []}
                     onChange={(_, newValue) => handleInputChange('serviceTypes', newValue)}
                     renderTags={(value, getTagProps) =>
-                      value.map((option, index) => (
-                        <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-                      ))
+                      value.map((option, index) => {
+                        const { key, ...otherProps } = getTagProps({ index });
+                        return (
+                          <Chip key={key} variant="outlined" label={option} {...otherProps} />
+                        );
+                      })
                     }
                     renderInput={(params) => (
                       <TextField
@@ -287,6 +302,36 @@ const EditProfilePage: React.FC = () => {
                         placeholder="Selecciona los tipos de servicios que tu empresa necesita"
                       />
                     )}
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Typography variant="h6" gutterBottom sx={{ mt: 2, mb: 1 }}>
+                    Presupuesto
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Presupuesto Mínimo (MXN)"
+                    type="number"
+                    value={profile.budget?.min || ''}
+                    onChange={(e) => handleBudgetChange('min', parseInt(e.target.value) || 0)}
+                    variant="outlined"
+                    inputProps={{ min: 0 }}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Presupuesto Máximo (MXN)"
+                    type="number"
+                    value={profile.budget?.max || ''}
+                    onChange={(e) => handleBudgetChange('max', parseInt(e.target.value) || 0)}
+                    variant="outlined"
+                    inputProps={{ min: 0 }}
                   />
                 </Grid>
               </>
@@ -313,9 +358,12 @@ const EditProfilePage: React.FC = () => {
                     value={profile.services || []}
                     onChange={(_, newValue) => handleInputChange('services', newValue)}
                     renderTags={(value, getTagProps) =>
-                      value.map((option, index) => (
-                        <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-                      ))
+                      value.map((option, index) => {
+                        const { key, ...otherProps } = getTagProps({ index });
+                        return (
+                          <Chip key={key} variant="outlined" label={option} {...otherProps} />
+                        );
+                      })
                     }
                     renderInput={(params) => (
                       <TextField

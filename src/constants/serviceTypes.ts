@@ -135,7 +135,6 @@ export const SERVICE_TYPES = [
   'Telemarketing',
   'Ventas B2B',
   'Ventas B2C',
-  'E-commerce',
   'Marketplace management',
   'Customer success',
   'Retención de clientes',
@@ -161,9 +160,7 @@ export const SERVICE_TYPES = [
   // Inmobiliario y Construcción
   'Inmobiliario',
   'Construcción',
-  'Arquitectura',
   'Ingeniería civil',
-  'Diseño de interiores',
   'Remodelación',
   'Mantenimiento',
   'Instalaciones eléctricas',
@@ -190,7 +187,6 @@ export const SERVICE_TYPES = [
   
   // Educación y Capacitación
   'Educación',
-  'Capacitación',
   'E-learning',
   'Desarrollo de contenido educativo',
   'Tutoring',
@@ -222,10 +218,6 @@ export const SERVICE_TYPES = [
   'Telecomunicaciones',
   
   // Servicios de Apoyo
-  'Limpieza',
-  'Seguridad',
-  'Mantenimiento',
-  'Jardinería',
   'Catering',
   'Eventos',
   'Fotografía de eventos',

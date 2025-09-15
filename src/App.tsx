@@ -20,6 +20,8 @@ import DataManagementPanel from './components/admin/DataManagementPanel';
 import DataDiagnosticPanel from './components/admin/DataDiagnosticPanel';
 import TroubleshootingGuide from './components/admin/TroubleshootingGuide';
 import ChatDebugPanel from './components/admin/ChatDebugPanel';
+import SimpleAddServicePage from './pages/SimpleAddServicePage';
+import SmartMatchesPage from './pages/SmartMatchesPage';
 
 const theme = createTheme({
   palette: {
@@ -247,6 +249,8 @@ function App() {
             {/* Public Routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/add-service" element={<Layout><SimpleAddServicePage /></Layout>} />
+            <Route path="/smart-matches" element={<Layout><SmartMatchesPage /></Layout>} />
             
             {/* Protected Routes */}
             <Route

@@ -2,6 +2,7 @@
 // Pobla la aplicación con datos iniciales para demostración
 
 import { dataPersistenceService } from './dataPersistenceService';
+import { initializeInitialData, debugDataStatus } from './initialDataService';
 import { 
   Chat, 
   ChatMessage, 
@@ -136,7 +137,7 @@ const samplePyMEProfiles: PyMEProfile[] = [
     id: 'pyme_profile_1',
     userId: '1',
     companyName: 'Distribuidora González',
-    industry: 'Retail',
+    industry: 'retail',
     size: 'mediana',
     location: 'Ciudad de México',
     description: 'Distribuidora de productos electrónicos con más de 10 años de experiencia en el mercado.',
@@ -152,7 +153,7 @@ const samplePyMEProfiles: PyMEProfile[] = [
     id: 'pyme_profile_2',
     userId: '2',
     companyName: 'Restaurante El Buen Sabor',
-    industry: 'Gastronomía',
+    industry: 'servicios',
     size: 'pequeña',
     location: 'Guadalajara',
     description: 'Restaurante familiar especializado en comida tradicional mexicana.',
@@ -186,6 +187,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
       phone: '+52 55 1111 2222',
       address: 'Av. Reforma 123, Ciudad de México',
     },
+    offeredServices: [],
+    offeredProducts: [],
   },
   {
     id: 'prov_profile_2',
@@ -205,6 +208,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
       phone: '+52 33 3333 4444',
       address: 'Av. López Mateos 456, Guadalajara',
     },
+    offeredServices: [],
+    offeredProducts: [],
   },
   {
     id: 'prov_profile_3',
@@ -224,6 +229,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
       phone: '+52 81 5555 6666',
       address: 'Av. Constitución 789, Monterrey',
     },
+    offeredServices: [],
+    offeredProducts: [],
   },
   {
     id: 'prov_profile_4',
@@ -243,6 +250,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
       phone: '+52 55 7777 8888',
       address: 'Av. Insurgentes 321, Ciudad de México',
     },
+    offeredServices: [],
+    offeredProducts: [],
   },
   {
     id: 'prov_profile_5',
@@ -262,6 +271,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
       phone: '+52 222 9999 0000',
       address: 'Calle 5 de Mayo 654, Puebla',
     },
+    offeredServices: [],
+    offeredProducts: [],
   },
   {
     id: 'prov_profile_6',
@@ -281,6 +292,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
       phone: '+52 664 1111 2222',
       address: 'Av. Revolución 987, Tijuana',
     },
+    offeredServices: [],
+    offeredProducts: [],
   },
   {
     id: 'prov_profile_7',
@@ -300,6 +313,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
       phone: '+52 442 3333 4444',
       address: 'Blvd. Bernardo Quintana 147, Querétaro',
     },
+    offeredServices: [],
+    offeredProducts: [],
   },
   {
     id: 'prov_profile_8',
@@ -319,6 +334,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
       phone: '+52 999 5555 6666',
       address: 'Calle 60 #456, Mérida',
     },
+    offeredServices: [],
+    offeredProducts: [],
   },
   {
     id: 'prov_profile_9',
@@ -338,6 +355,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
       phone: '+52 998 7777 8888',
       address: 'Av. Tulum 258, Cancún',
     },
+    offeredServices: [],
+    offeredProducts: [],
   },
   {
     id: 'prov_profile_10',
@@ -357,6 +376,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
       phone: '+52 477 9999 0000',
       address: 'Blvd. López Mateos 369, León',
     },
+    offeredServices: [],
+    offeredProducts: [],
   },
   {
     id: 'prov_profile_11',
@@ -376,6 +397,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
       phone: '+52 33 4444 5555',
       address: 'Av. Chapultepec 741, Guadalajara',
     },
+    offeredServices: [],
+    offeredProducts: [],
   },
   {
     id: 'prov_profile_12',
@@ -395,6 +418,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
       phone: '+52 55 6666 7777',
       address: 'Polanco, Ciudad de México',
     },
+    offeredServices: [],
+    offeredProducts: [],
   },
 ];
 
@@ -806,6 +831,14 @@ export const initializeSampleData = (): void => {
 
     console.log('Inicializando datos de ejemplo...');
 
+    // Limpiar proveedores de ejemplo primero
+    try {
+      clearSampleProveedores();
+      console.log('🧹 Proveedores de ejemplo limpiados automáticamente');
+    } catch (error) {
+      console.log('No hay proveedores de ejemplo para limpiar');
+    }
+
     // Guardar usuarios
     sampleUsers.forEach(user => {
       try {
@@ -824,14 +857,14 @@ export const initializeSampleData = (): void => {
       }
     });
 
-    // Guardar perfiles Proveedor
-    sampleProveedorProfiles.forEach(profile => {
-      try {
-        dataPersistenceService.proveedorProfiles.saveProfile(profile);
-      } catch (error) {
-        console.error('Error al guardar perfil Proveedor:', profile.id, error);
-      }
-    });
+    // Guardar perfiles Proveedor (comentado para no crear proveedores de ejemplo)
+    // sampleProveedorProfiles.forEach(profile => {
+    //   try {
+    //     dataPersistenceService.proveedorProfiles.saveProfile(profile);
+    //   } catch (error) {
+    //     console.error('Error al guardar perfil Proveedor:', profile.id, error);
+    //   }
+    // });
 
     // Guardar matches
     sampleMatches.forEach(match => {
@@ -885,6 +918,19 @@ export const initializeSampleData = (): void => {
     console.log('Datos de ejemplo inicializados correctamente');
   } catch (error) {
     console.error('Error al inicializar datos de ejemplo:', error);
+  }
+};
+
+// Función para inicializar servicios y productos
+export const initializeServicesAndProducts = async (): Promise<void> => {
+  try {
+    await initializeInitialData();
+    console.log('🛍️ Servicios y productos inicializados');
+    
+    // Debug: verificar el estado de los datos
+    debugDataStatus();
+  } catch (error) {
+    console.error('Error al inicializar servicios y productos:', error);
   }
 };
 
@@ -1010,6 +1056,42 @@ export const clearAllData = (): void => {
   }
 };
 
+// Función para limpiar solo proveedores de ejemplo
+export const clearSampleProveedores = (): number => {
+  try {
+    // Obtener todos los proveedores
+    const allProveedores = dataPersistenceService.proveedorProfiles.getAllProfiles();
+    
+    // Filtrar solo los proveedores de ejemplo (que tienen IDs como 'prov1', 'prov2', etc.)
+    const sampleProveedores = allProveedores.filter(proveedor => 
+      proveedor.id.startsWith('prov') && proveedor.id !== 'prov_profile_'
+    );
+    
+    // Eliminar cada proveedor de ejemplo
+    sampleProveedores.forEach(proveedor => {
+      dataPersistenceService.proveedorProfiles.deleteProfile(proveedor.id);
+    });
+    
+    console.log(`🧹 Se eliminaron ${sampleProveedores.length} proveedores de ejemplo`);
+    return sampleProveedores.length;
+  } catch (error) {
+    console.error('Error al limpiar proveedores de ejemplo:', error);
+    return 0;
+  }
+};
+
+// Función para limpiar automáticamente al cargar la aplicación
+export const autoCleanupSampleData = (): void => {
+  try {
+    const deletedCount = clearSampleProveedores();
+    if (deletedCount > 0) {
+      console.log(`✅ Limpieza automática completada: ${deletedCount} proveedores de ejemplo eliminados`);
+    }
+  } catch (error) {
+    console.error('Error en limpieza automática:', error);
+  }
+};
+
 // Función para exportar datos
 export const exportData = (): Record<string, any> => {
   try {
@@ -1052,6 +1134,7 @@ export const getDataStats = (): Record<string, number> => {
 
 export default {
   initializeSampleData,
+  initializeServicesAndProducts,
   initializeChatsAndMessages,
   createSampleChatsWithStatus,
   clearChatsAndMessages,

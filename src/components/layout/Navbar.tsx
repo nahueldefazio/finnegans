@@ -21,6 +21,8 @@ import {
   Person as PersonIcon,
   Logout as LogoutIcon,
   AdminPanelSettings as AdminIcon,
+  Add as AddIcon,
+  Psychology as SmartIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -62,7 +64,9 @@ const Navbar: React.FC = () => {
 
   const navigationItems = [
     { path: '/dashboard', label: 'Dashboard', icon: <DashboardIcon /> },
+    { path: '/smart-matches', label: 'Mis Matches', icon: <SmartIcon /> },
     { path: '/search', label: 'Buscar', icon: <SearchIcon /> },
+    { path: '/add-service', label: 'Agregar Servicios', icon: <AddIcon /> },
     { path: '/chat', label: 'Chat', icon: <ChatIcon /> },
     { path: '/business', label: 'Negocios', icon: <BusinessIcon /> },
     { path: '/profile', label: 'Mi Perfil', icon: <PersonIcon /> },

@@ -47,6 +47,9 @@ export interface ProveedorProfile {
   };
   rating: number;
   totalReviews: number;
+  // Servicios y productos ofrecidos por el proveedor
+  offeredServices: Service[];
+  offeredProducts: Product[];
 }
 
 export interface Match {
@@ -116,6 +119,60 @@ export interface Business {
   startDate: string;
   endDate?: string;
   createdAt: string;
+}
+
+export interface Service {
+  id: string;
+  userId: string;
+  name: string;
+  description: string;
+  category: string;
+  type: 'service' | 'product';
+  pricing: {
+    minPrice: number;
+    maxPrice: number;
+    currency: string;
+    unit: string; // 'por hora', 'por proyecto', 'por unidad', etc.
+  };
+  availability: {
+    isAvailable: boolean;
+    schedule?: string;
+    location?: string;
+  };
+  features: string[];
+  requirements: string[];
+  deliveryTime: string;
+  images: string[];
+  tags: string[];
+  status: 'active' | 'inactive' | 'pending';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Product {
+  id: string;
+  userId: string;
+  name: string;
+  description: string;
+  category: string;
+  type: 'product';
+  pricing: {
+    price: number;
+    currency: string;
+    unit: string; // 'por unidad', 'por caja', etc.
+  };
+  availability: {
+    isAvailable: boolean;
+    stock: number;
+    location?: string;
+  };
+  specifications: string[];
+  features: string[];
+  images: string[];
+  tags: string[];
+  status: 'active' | 'inactive' | 'pending';
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface DashboardMetrics {
