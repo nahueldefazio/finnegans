@@ -20,6 +20,7 @@ import {
   Logout as LogoutIcon,
   Add as AddIcon,
   Psychology as SmartIcon,
+  AdminPanelSettings as AdminIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -66,6 +67,7 @@ const Navbar: React.FC = () => {
     { path: '/add-service', label: 'Agregar Servicios', icon: <AddIcon /> },
     { path: '/business', label: 'Mis Negocios', icon: <BusinessIcon /> },
     { path: '/chat', label: 'Chat', icon: <ChatIcon /> },
+    { path: '/admin/data', label: 'Admin Panel', icon: <AdminIcon /> },
   ];
 
   return (

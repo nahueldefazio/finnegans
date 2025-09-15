@@ -3,6 +3,7 @@
 
 import { dataPersistenceService } from './dataPersistenceService';
 import { initializeInitialData, debugDataStatus } from './initialDataService';
+import { servicePersistenceService, productPersistenceService } from './serviceService';
 import { 
   Chat, 
   ChatMessage, 
@@ -927,12 +928,41 @@ export const initializeSampleData = (): void => {
 export const initializeServicesAndProducts = async (): Promise<void> => {
   try {
     await initializeInitialData();
-    console.log('🛍️ Servicios y productos inicializados');
     
     // Debug: verificar el estado de los datos
     debugDataStatus();
   } catch (error) {
-    console.error('Error al inicializar servicios y productos:', error);
+    // Error silencioso
+  }
+};
+
+// Función para forzar la inicialización de servicios y productos
+export const forceInitializeServicesAndProducts = async (): Promise<{
+  success: boolean;
+  servicesCount: number;
+  productsCount: number;
+  message: string;
+}> => {
+  try {
+    await initializeInitialData();
+    
+    // Verificar que se crearon correctamente
+    const services = servicePersistenceService.getAllServices();
+    const products = productPersistenceService.getAllProducts();
+    
+    return {
+      success: true,
+      servicesCount: services.length,
+      productsCount: products.length,
+      message: `✅ Inicialización exitosa: ${services.length} servicios y ${products.length} productos creados`
+    };
+  } catch (error) {
+    return {
+      success: false,
+      servicesCount: 0,
+      productsCount: 0,
+      message: '❌ Error al inicializar servicios y productos'
+    };
   }
 };
 
@@ -1137,6 +1167,7 @@ export const getDataStats = (): Record<string, number> => {
 const dataInitializationService = {
   initializeSampleData,
   initializeServicesAndProducts,
+  forceInitializeServicesAndProducts,
   initializeChatsAndMessages,
   createSampleChatsWithStatus,
   clearChatsAndMessages,

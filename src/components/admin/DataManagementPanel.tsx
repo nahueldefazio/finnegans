@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   initializeSampleData,
   initializeServicesAndProducts,
+  forceInitializeServicesAndProducts,
   clearAllData,
   clearSampleProveedores,
   exportData,
@@ -32,6 +33,7 @@ const DataManagementPanel: React.FC = () => {
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [importDataText, setImportDataText] = useState('');
   const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [initializationMessage, setInitializationMessage] = useState<string>('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,6 +51,24 @@ const DataManagementPanel: React.FC = () => {
       setAlert({ type: 'success', message: 'Datos de ejemplo inicializados correctamente' });
     } catch (error) {
       setAlert({ type: 'error', message: 'Error al inicializar datos' });
+    }
+  };
+
+  const handleForceInitializeServices = async () => {
+    try {
+      setInitializationMessage('🔄 Inicializando servicios y productos...');
+      const result = await forceInitializeServicesAndProducts();
+      setInitializationMessage(result.message);
+      updateStats();
+      
+      if (result.success) {
+        setAlert({ type: 'success', message: result.message });
+      } else {
+        setAlert({ type: 'error', message: result.message });
+      }
+    } catch (error) {
+      setInitializationMessage('❌ Error al inicializar servicios y productos');
+      setAlert({ type: 'error', message: 'Error al inicializar servicios y productos' });
     }
   };
 
@@ -207,6 +227,20 @@ const DataManagementPanel: React.FC = () => {
 
                 <Grid item xs={12} sm={6} md={3}>
                   <Button
+                    variant="contained"
+                    color="secondary"
+                    fullWidth
+                    onClick={handleForceInitializeServices}
+                  >
+                    Inicializar Servicios y Productos
+                  </Button>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                    Fuerza la creación de servicios y productos
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                  <Button
                     variant="outlined"
                     color="secondary"
                     fullWidth
@@ -320,6 +354,20 @@ const DataManagementPanel: React.FC = () => {
                   </Typography>
                 </Grid>
               </Grid>
+              
+              {initializationMessage && (
+                <Box sx={{ mt: 2 }}>
+                  <Alert 
+                    severity={initializationMessage.includes('✅') ? 'success' : 'info'}
+                    sx={{ 
+                      backgroundColor: initializationMessage.includes('✅') ? 'success.lighter' : 'info.lighter',
+                      color: initializationMessage.includes('✅') ? 'success.dark' : 'info.dark'
+                    }}
+                  >
+                    {initializationMessage}
+                  </Alert>
+                </Box>
+              )}
             </CardContent>
           </Card>
         </Grid>
