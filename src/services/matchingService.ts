@@ -37,7 +37,6 @@ export const calculateMatchScore = (pyme: PyMEProfile, proveedor: ProveedorProfi
   } else if (pyme.location.toLowerCase().includes(proveedor.location.toLowerCase()) || proveedor.location.toLowerCase().includes(pyme.location.toLowerCase())) {
     score += 5;
   }
-  factors++;
 
   // Número de reviews (5% del score)
   if (proveedor.totalReviews >= 20) {
@@ -47,7 +46,6 @@ export const calculateMatchScore = (pyme: PyMEProfile, proveedor: ProveedorProfi
   } else if (proveedor.totalReviews >= 5) {
     score += 1;
   }
-  factors++;
 
   return Math.round(score);
 };
@@ -135,18 +133,6 @@ export const searchServices = async (
   const allProveedores = dataPersistenceService.proveedorProfiles.getAllProfiles();
   const results: { service: Service; proveedor: ProveedorProfile }[] = [];
 
-  console.log('Searching services in', allServices.length, 'services');
-  console.log('Search filters:', {
-    term: searchTerm || 'none',
-    category: category || 'none',
-    maxPrice: maxPrice || 'none',
-    serviceType: serviceType || 'none',
-    deliveryTime: deliveryTime || 'none',
-    features: features?.length ? features : 'none',
-    tags: tags?.length ? tags : 'none',
-    location: location || 'none',
-    isAvailable: isAvailable !== undefined ? isAvailable : 'none'
-  });
 
   // Buscar en todos los servicios
   allServices.forEach((service) => {
@@ -156,7 +142,6 @@ export const searchServices = async (
     
     if (!proveedor) return;
 
-    console.log('Checking service:', service.name, 'from', proveedor.companyName);
     
     // Solo servicios activos y disponibles por defecto
     if (service.status === 'active' && service.availability.isAvailable) {
@@ -165,10 +150,6 @@ export const searchServices = async (
       // Filtrar por término de búsqueda (solo si hay término)
       if (searchTerm && searchTerm.trim() !== '') {
         const term = searchTerm.toLowerCase().trim();
-        console.log(`Checking term "${term}" against service "${service.name}"`);
-        console.log(`Name match: ${service.name.toLowerCase().includes(term)}`);
-        console.log(`Description match: ${service.description.toLowerCase().includes(term)}`);
-        console.log(`Category match: ${service.category.toLowerCase().includes(term)}`);
         
         const nameMatch = service.name.toLowerCase().includes(term);
         const descMatch = service.description.toLowerCase().includes(term);
@@ -177,7 +158,6 @@ export const searchServices = async (
         const featuresMatch = service.features.some((feature) => feature.toLowerCase().includes(term));
         
         matches = matches && (nameMatch || descMatch || catMatch || tagsMatch || featuresMatch);
-        console.log(`Final match result: ${matches}`);
       }
 
       // Filtrar por categoría (solo si hay categoría)
@@ -223,12 +203,10 @@ export const searchServices = async (
 
       if (matches) {
         results.push({ service, proveedor });
-        console.log('Service matched:', service.name, 'from', proveedor.companyName);
       }
     }
   });
 
-  console.log('Total services found:', results.length);
 
   // Ordenar resultados
   return results.sort((a, b) => {
@@ -261,8 +239,6 @@ export const searchProducts = async (searchTerm: string, category?: string, maxP
   const allProveedores = dataPersistenceService.proveedorProfiles.getAllProfiles();
   const results: { product: Product; proveedor: ProveedorProfile }[] = [];
 
-  console.log('Searching products in', allProducts.length, 'products');
-  console.log('Search filters - Term:', searchTerm || 'none', 'Category:', category || 'none', 'MaxPrice:', maxPrice || 'none');
 
   // Buscar en todos los productos
   allProducts.forEach((product) => {
@@ -272,7 +248,6 @@ export const searchProducts = async (searchTerm: string, category?: string, maxP
     
     if (!proveedor) return;
 
-    console.log('Checking product:', product.name, 'from', proveedor.companyName);
     
     if (product.status === 'active' && product.availability.isAvailable) {
       let matches = true;
@@ -300,12 +275,10 @@ export const searchProducts = async (searchTerm: string, category?: string, maxP
 
       if (matches) {
         results.push({ product, proveedor });
-        console.log('Product matched:', product.name, 'from', proveedor.companyName);
       }
     }
   });
 
-  console.log('Total products found:', results.length);
 
   // Ordenar resultados
   return results.sort((a, b) => {
@@ -331,12 +304,10 @@ export const searchProducts = async (searchTerm: string, category?: string, maxP
 
 // Funciones para obtener todos los servicios y productos disponibles
 export const getAllAvailableServices = async (): Promise<{ service: Service; proveedor: ProveedorProfile }[]> => {
-  console.log('Getting all available services...');
   return await searchServices('', undefined, undefined);
 };
 
 export const getAllAvailableProducts = async (): Promise<{ product: Product; proveedor: ProveedorProfile }[]> => {
-  console.log('Getting all available products...');
   return await searchProducts('', undefined, undefined);
 };
 

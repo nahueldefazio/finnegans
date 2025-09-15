@@ -14,6 +14,7 @@ import {
 import { Business, Review } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import { getChatStatusForBusiness } from '../../services/businessService';
+import { dataPersistenceService } from '../../services/dataPersistenceService';
 
 interface BusinessCardProps {
   business: Business;
@@ -94,6 +95,23 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
     }
   };
 
+  const getBusinessTitle = () => {
+    try {
+      // Obtener información de la PyME y el proveedor
+      const pymeProfile = dataPersistenceService.pymeProfiles.getProfileByUserId(business.pymeId);
+      const proveedorProfile = dataPersistenceService.proveedorProfiles.getProfileByUserId(business.proveedorId);
+      
+      const pymeName = pymeProfile?.companyName || 'PyME';
+      const proveedorName = proveedorProfile?.companyName || 'Proveedor';
+      
+      // Crear un título más descriptivo
+      return `${pymeName} ↔ ${proveedorName}`;
+    } catch (error) {
+      // Fallback al ID si hay algún error
+      return `Proyecto #${business.id.slice(-6)}`;
+    }
+  };
+
   if (loading) {
     return (
       <Card 
@@ -164,7 +182,9 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, mb: 4, flexWrap: 'wrap' }}>
               <Typography 
                 variant="h6"
-                sx={{ 
+                sx={{
+                  marginLeft: '20px',
+                  marginTop: '10px',
                   fontWeight: 600,
                   background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
                   backgroundClip: 'text',
@@ -172,7 +192,7 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
                   WebkitTextFillColor: 'transparent',
                 }}
               >
-                Proyecto #{business.id.slice(-6)}
+                {getBusinessTitle()}
               </Typography>
               <Chip
                 label={getStatusText(business.status)}
@@ -229,17 +249,21 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
               />
             </Box>
 
-            <Grid container spacing={3} sx={{ maxWidth: '100%' }}>
+            <Grid container spacing={3} sx={{ maxWidth: '100%', justifyContent: 'center' }}>
               <Grid xs={12} sm={6} md={3}>
                 <Box sx={{ 
                   mb: 2.5, 
-                  p: 2.5, 
+                  p: 3, 
                   minWidth: 0, 
                   maxWidth: '100%', 
                   overflow: 'hidden',
                   textAlign: 'center',
                   borderRadius: 2,
                   background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5, fontWeight: 500 }}>
                     Monto Total
@@ -264,13 +288,17 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
               <Grid xs={12} sm={6} md={3}>
                 <Box sx={{ 
                   mb: 2.5, 
-                  p: 2.5, 
+                  p: 3, 
                   minWidth: 0, 
                   maxWidth: '100%', 
                   overflow: 'hidden',
                   textAlign: 'center',
                   borderRadius: 2,
                   background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(52, 211, 153, 0.05) 100%)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5, fontWeight: 500 }}>
                     Fecha de Inicio
@@ -285,13 +313,17 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
                 <Grid xs={12} sm={6} md={3}>
                   <Box sx={{ 
                     mb: 2.5, 
-                    p: 2.5, 
+                    p: 3, 
                     minWidth: 0, 
                     maxWidth: '100%', 
                     overflow: 'hidden',
                     textAlign: 'center',
                     borderRadius: 2,
                     background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(251, 191, 36, 0.05) 100%)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5, fontWeight: 500 }}>
                       Fecha de Finalización
@@ -306,13 +338,17 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
               <Grid xs={12} sm={6} md={3}>
                 <Box sx={{ 
                   mb: 2.5, 
-                  p: 2.5, 
+                  p: 3, 
                   minWidth: 0, 
                   maxWidth: '100%', 
                   overflow: 'hidden',
                   textAlign: 'center',
                   borderRadius: 2,
                   background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5, fontWeight: 500 }}>
                     Duración
@@ -329,13 +365,17 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
               <Grid xs={12} sm={6} md={3}>
                 <Box sx={{ 
                   mb: 2.5, 
-                  p: 2.5, 
+                  p: 3, 
                   minWidth: 0, 
                   maxWidth: '100%', 
                   overflow: 'hidden',
                   textAlign: 'center',
                   borderRadius: 2,
                   background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(147, 197, 253, 0.05) 100%)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5, fontWeight: 500 }}>
                     Estado del Chat

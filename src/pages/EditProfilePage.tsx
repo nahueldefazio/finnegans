@@ -314,24 +314,42 @@ const EditProfilePage: React.FC = () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Presupuesto Mínimo (MXN)"
+                    label="Presupuesto Mínimo (USD)"
                     type="number"
                     value={profile.budget?.min || ''}
-                    onChange={(e) => handleBudgetChange('min', parseInt(e.target.value) || 0)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === '' || /^\d+$/.test(value)) {
+                        handleBudgetChange('min', value === '' ? 0 : parseInt(value));
+                      }
+                    }}
                     variant="outlined"
-                    inputProps={{ min: 0 }}
+                    inputProps={{ 
+                      min: 0,
+                      pattern: '[0-9]*',
+                      inputMode: 'numeric'
+                    }}
                   />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Presupuesto Máximo (MXN)"
+                    label="Presupuesto Máximo (USD)"
                     type="number"
                     value={profile.budget?.max || ''}
-                    onChange={(e) => handleBudgetChange('max', parseInt(e.target.value) || 0)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === '' || /^\d+$/.test(value)) {
+                        handleBudgetChange('max', value === '' ? 0 : parseInt(value));
+                      }
+                    }}
                     variant="outlined"
-                    inputProps={{ min: 0 }}
+                    inputProps={{ 
+                      min: 0,
+                      pattern: '[0-9]*',
+                      inputMode: 'numeric'
+                    }}
                   />
                 </Grid>
               </>

@@ -8,14 +8,14 @@ const initialServices = [
     category: 'Desarrollo de software',
     type: 'service' as const,
     pricing: {
-      minPrice: 8000,
-      maxPrice: 15000,
-      currency: 'MXN',
+      minPrice: 800,
+      maxPrice: 1500,
+      currency: 'USD',
       unit: 'por proyecto',
     },
     availability: {
       isAvailable: true,
-      location: 'Ciudad de México, México',
+      location: 'Buenos Aires, Argentina',
     },
     features: [
       'Diseño responsive',
@@ -42,14 +42,14 @@ const initialServices = [
     category: 'Marketing digital',
     type: 'service' as const,
     pricing: {
-      minPrice: 6000,
-      maxPrice: 12000,
-      currency: 'MXN',
+      minPrice: 600,
+      maxPrice: 1200,
+      currency: 'USD',
       unit: 'por mes',
     },
     availability: {
       isAvailable: true,
-      location: 'Guadalajara, Jalisco, México',
+      location: 'Córdoba, Argentina',
     },
     features: [
       'Gestión de redes sociales',
@@ -76,14 +76,14 @@ const initialServices = [
     category: 'Recursos humanos',
     type: 'service' as const,
     pricing: {
-      minPrice: 5000,
-      maxPrice: 15000,
-      currency: 'MXN',
+      minPrice: 500,
+      maxPrice: 1500,
+      currency: 'USD',
       unit: 'por proyecto',
     },
     availability: {
       isAvailable: true,
-      location: 'Monterrey, Nuevo León, México',
+      location: 'Rosario, Argentina',
     },
     features: [
       'Reclutamiento y selección',
@@ -110,14 +110,14 @@ const initialServices = [
     category: 'Contabilidad',
     type: 'service' as const,
     pricing: {
-      minPrice: 3000,
-      maxPrice: 12000,
-      currency: 'MXN',
+      minPrice: 300,
+      maxPrice: 1200,
+      currency: 'USD',
       unit: 'por mes',
     },
     availability: {
       isAvailable: true,
-      location: 'Puebla, Puebla, México',
+      location: 'Mendoza, Argentina',
     },
     features: [
       'Contabilidad general',
@@ -144,14 +144,14 @@ const initialServices = [
     category: 'Diseño',
     type: 'service' as const,
     pricing: {
-      minPrice: 2000,
-      maxPrice: 8000,
-      currency: 'MXN',
+      minPrice: 200,
+      maxPrice: 800,
+      currency: 'USD',
       unit: 'por proyecto',
     },
     availability: {
       isAvailable: true,
-      location: 'Tijuana, Baja California, México',
+      location: 'La Plata, Argentina',
     },
     features: [
       'Identidad corporativa',
@@ -182,14 +182,14 @@ const initialProducts = [
     category: 'Software empresarial',
     type: 'product' as const,
     pricing: {
-      price: 25000,
-      currency: 'MXN',
+      price: 2500,
+      currency: 'USD',
       unit: 'licencia única',
     },
     availability: {
       isAvailable: true,
       stock: 50,
-      location: 'Ciudad de México, México',
+      location: 'Buenos Aires, Argentina',
     },
     specifications: [
       'Compatibilidad: Windows, Mac, Linux',
@@ -217,14 +217,14 @@ const initialProducts = [
     category: 'Herramientas digitales',
     type: 'product' as const,
     pricing: {
-      price: 12000,
-      currency: 'MXN',
+      price: 1200,
+      currency: 'USD',
       unit: 'paquete anual',
     },
     availability: {
       isAvailable: true,
       stock: 100,
-      location: 'Guadalajara, Jalisco, México',
+      location: 'Córdoba, Argentina',
     },
     specifications: [
       'CRM para hasta 1000 contactos',
@@ -252,14 +252,14 @@ const initialProducts = [
     category: 'Capacitación',
     type: 'product' as const,
     pricing: {
-      price: 8000,
-      currency: 'MXN',
+      price: 800,
+      currency: 'USD',
       unit: 'por participante',
     },
     availability: {
       isAvailable: true,
       stock: 200,
-      location: 'Monterrey, Nuevo León, México',
+      location: 'Rosario, Argentina',
     },
     specifications: [
       'Duración: 40 horas',
@@ -288,56 +288,31 @@ const initialProducts = [
  */
 export const initializeInitialData = async (): Promise<void> => {
   try {
-    console.log('🚀 Inicializando datos de servicios y productos...');
-
-    // Verificar si ya existen datos
-    const existingServices = servicePersistenceService.getAllServices();
-    const existingProducts = productPersistenceService.getAllProducts();
-
-    console.log(`📊 Servicios existentes: ${existingServices.length}`);
-    console.log(`📊 Productos existentes: ${existingProducts.length}`);
-
     // Siempre limpiar y recrear para asegurar que tenemos los datos correctos
-    console.log('🧹 Limpiando datos existentes para crear servicios iniciales correctos...');
     await clearAllServicesAndProducts();
-    console.log('✅ Datos limpiados, procediendo con inicialización...');
 
     // Crear servicios
-    console.log('📝 Creando servicios iniciales...');
-    console.log(`📋 Total de servicios a crear: ${initialServices.length}`);
-    
     for (let i = 0; i < initialServices.length; i++) {
       const serviceData = initialServices[i];
       try {
-        console.log(`🔄 Creando servicio ${i + 1}/${initialServices.length}: ${serviceData.name}`);
-        const createdService = await createService('system_provider', serviceData);
-        console.log(`✅ Servicio creado exitosamente: ${createdService.name} (ID: ${createdService.id})`);
+        await createService('system_provider', serviceData);
       } catch (error) {
-        console.error(`❌ Error creando servicio ${serviceData.name}:`, error);
+        // Error silencioso
       }
     }
 
     // Crear productos
-    console.log('📦 Creando productos iniciales...');
-    console.log(`📋 Total de productos a crear: ${initialProducts.length}`);
-    
     for (let i = 0; i < initialProducts.length; i++) {
       const productData = initialProducts[i];
       try {
-        console.log(`🔄 Creando producto ${i + 1}/${initialProducts.length}: ${productData.name}`);
-        const createdProduct = await createProduct('system_provider', productData);
-        console.log(`✅ Producto creado exitosamente: ${createdProduct.name} (ID: ${createdProduct.id})`);
+        await createProduct('system_provider', productData);
       } catch (error) {
-        console.error(`❌ Error creando producto ${productData.name}:`, error);
+        // Error silencioso
       }
     }
 
-    console.log('🎉 Datos iniciales creados exitosamente!');
-    console.log(`📊 Total servicios: ${initialServices.length}`);
-    console.log(`📊 Total productos: ${initialProducts.length}`);
-
   } catch (error) {
-    console.error('❌ Error inicializando datos:', error);
+    // Error silencioso
   }
 };
 
@@ -346,8 +321,6 @@ export const initializeInitialData = async (): Promise<void> => {
  */
 export const clearAllServicesAndProducts = async (): Promise<void> => {
   try {
-    console.log('🧹 Limpiando todos los servicios y productos...');
-
     const allServices = servicePersistenceService.getAllServices();
     const allProducts = productPersistenceService.getAllProducts();
 
@@ -361,10 +334,8 @@ export const clearAllServicesAndProducts = async (): Promise<void> => {
       productPersistenceService.deleteProduct(product.id);
     }
 
-    console.log(`✅ Limpiados ${allServices.length} servicios y ${allProducts.length} productos`);
-
   } catch (error) {
-    console.error('❌ Error limpiando datos:', error);
+    // Error silencioso
   }
 };
 
@@ -380,17 +351,5 @@ export const reinitializeData = async (): Promise<void> => {
  * Función de debug para verificar el estado de los datos
  */
 export const debugDataStatus = (): void => {
-  const services = servicePersistenceService.getAllServices();
-  const products = productPersistenceService.getAllProducts();
-  
-  console.log('🔍 DEBUG - Estado de los datos:');
-  console.log(`Servicios: ${services.length}`);
-  services.forEach((service, index) => {
-    console.log(`  ${index + 1}. ${service.name} (${service.category}) - Status: ${service.status}`);
-  });
-  
-  console.log(`Productos: ${products.length}`);
-  products.forEach((product, index) => {
-    console.log(`  ${index + 1}. ${product.name} (${product.category}) - Status: ${product.status}`);
-  });
+  // Función de debug silenciosa
 };

@@ -10,15 +10,14 @@ import {
   Paper,
   Chip,
   IconButton,
-  Button,
-  CircularProgress,
   Skeleton,
 } from '@mui/material';
 import { Business as BusinessIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import { Chat } from '../../types';
 import { getChatsByUserId } from '../../services/chatService';
 import { useAuth } from '../../contexts/AuthContext';
-import { initializeChatsAndMessages, createSampleChatsWithStatus } from '../../services/dataInitializationService';
+import { getProveedorById } from '../../services/matchingService';
+import { dataPersistenceService } from '../../services/dataPersistenceService';
 import CustomScrollbar from '../common/CustomScrollbar';
 
 interface ChatListProps {
@@ -45,31 +44,6 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat, selectedChatId }) => 
     }
   }, [user?.id]);
 
-  const initializeSampleChats = useCallback(async () => {
-    setLoading(true);
-    try {
-      initializeChatsAndMessages();
-      // Recargar chats después de inicializar
-      await loadChats();
-    } catch (error) {
-      console.error('Error initializing sample chats:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [loadChats]);
-
-  const createSampleChatsWithBusinessStatus = useCallback(async () => {
-    setLoading(true);
-    try {
-      createSampleChatsWithStatus();
-      // Recargar chats después de inicializar
-      await loadChats();
-    } catch (error) {
-      console.error('Error creating sample chats with status:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [loadChats]);
 
   // Cargar chats automáticamente cuando se monta el componente
   useEffect(() => {
@@ -121,11 +95,14 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat, selectedChatId }) => 
   };
 
   const getOtherUserName = (chat: Chat) => {
-    // En una aplicación real, esto vendría del backend con los datos del usuario
+    // Obtener el nombre real del proveedor o PyME
     if (user?.type === 'pyme') {
-      return 'Proveedor';
+      const proveedor = getProveedorById(chat.proveedorId);
+      return proveedor?.companyName || 'Proveedor';
     } else {
-      return 'PyME';
+      // Si el usuario es proveedor, obtener el nombre de la PyME
+      const pymeProfile = dataPersistenceService.pymeProfiles.getProfileByUserId(chat.pymeId);
+      return pymeProfile?.companyName || 'PyME';
     }
   };
 
@@ -204,61 +181,6 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat, selectedChatId }) => 
           💬 Conversaciones
         </Typography>
         <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
-          {chats.length === 0 && !loading && (
-            <>
-              <Button
-                size="small"
-                variant="contained"
-                onClick={initializeSampleChats}
-                disabled={loading}
-                sx={{
-                  borderRadius: 2.5,
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  px: 2.5,
-                  py: 1.5,
-                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 25px rgba(99, 102, 241, 0.4)',
-                  },
-                  '&:active': {
-                    transform: 'translateY(0)',
-                  }
-                }}
-              >
-                ✨ Crear Chats de Ejemplo
-              </Button>
-              <Button
-                size="small"
-                variant="outlined"
-                onClick={createSampleChatsWithBusinessStatus}
-                disabled={loading}
-                sx={{
-                  borderRadius: 2.5,
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  px: 2.5,
-                  py: 1.5,
-                  border: '2px solid',
-                  borderColor: 'secondary.main',
-                  color: 'secondary.main',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 25px rgba(139, 92, 246, 0.3)',
-                    background: 'rgba(139, 92, 246, 0.1)',
-                  },
-                  '&:active': {
-                    transform: 'translateY(0)',
-                  }
-                }}
-              >
-                🎯 Crear Chats con Estados
-              </Button>
-            </>
-          )}
           <IconButton
             size="small"
             onClick={loadChats}
@@ -314,14 +236,8 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat, selectedChatId }) => 
             <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 2, lineHeight: 1.6 }}>
               No tienes conversaciones activas
             </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 2, lineHeight: 1.6 }}>
-              Haz clic en "Crear Chats de Ejemplo" para generar conversaciones de demostración
-            </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 2, lineHeight: 1.6 }}>
-              O haz clic en "Crear Chats con Estados" para ver cómo se muestran los estados en negocios
-            </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-              También puedes iniciar una conversación con un proveedor desde la página de búsqueda
+              Inicia una conversación con un proveedor desde la página de búsqueda o Smart Matches
             </Typography>
           </Box>
         </Box>
@@ -340,6 +256,7 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat, selectedChatId }) => 
                 onClick={() => onSelectChat(chat)}
                 selected={selectedChatId === chat.id}
                 sx={{
+                  width: 'auto',
                   borderRadius: 2.5,
                   mx: 1.5,
                   my: 0.75,

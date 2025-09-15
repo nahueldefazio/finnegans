@@ -6,13 +6,8 @@ import { initializeInitialData, debugDataStatus } from './initialDataService';
 import { 
   Chat, 
   ChatMessage, 
-  Business, 
-  Review, 
   PyMEProfile, 
-  ProveedorProfile, 
-  Match,
-  User,
-  Quotation 
+  User
 } from '../types/index';
 
 // Datos de ejemplo para usuarios
@@ -139,14 +134,14 @@ const samplePyMEProfiles: PyMEProfile[] = [
     companyName: 'Distribuidora González',
     industry: 'retail',
     size: 'mediana',
-    location: 'Ciudad de México',
+    location: 'Buenos Aires',
     description: 'Distribuidora de productos electrónicos con más de 10 años de experiencia en el mercado.',
     needs: ['Desarrollo de software', 'Marketing digital', 'Consultoría financiera'],
     serviceTypes: ['Desarrollo de software', 'Marketing digital', 'Consultoría'],
-    budget: { min: 5000, max: 10000 },
+    budget: { min: 500, max: 1000 },
     contactInfo: {
-      phone: '+52 55 1234 5678',
-      address: 'Av. Reforma 123, Ciudad de México',
+      phone: '+54 11 1234 5678',
+      address: 'Av. Corrientes 123, Buenos Aires',
     },
   },
   {
@@ -155,25 +150,26 @@ const samplePyMEProfiles: PyMEProfile[] = [
     companyName: 'Restaurante El Buen Sabor',
     industry: 'servicios',
     size: 'pequeña',
-    location: 'Guadalajara',
-    description: 'Restaurante familiar especializado en comida tradicional mexicana.',
+    location: 'Córdoba',
+    description: 'Restaurante familiar especializado en comida tradicional argentina.',
     needs: ['Diseño gráfico', 'Marketing digital', 'Sistema de reservas'],
     serviceTypes: ['Diseño gráfico', 'Marketing digital', 'Desarrollo de software'],
-    budget: { min: 2000, max: 5000 },
+    budget: { min: 200, max: 500 },
     contactInfo: {
-      phone: '+52 33 9876 5432',
-      address: 'Av. López Mateos 456, Guadalajara',
+      phone: '+54 351 9876 5432',
+      address: 'Av. Colón 456, Córdoba',
     },
   },
 ];
 
-// Datos de ejemplo para perfiles Proveedor
+// Datos de ejemplo para perfiles Proveedor (no utilizados)
+/*
 const sampleProveedorProfiles: ProveedorProfile[] = [
   {
     id: 'prov_profile_1',
     userId: 'prov1',
     companyName: 'Tech Solutions',
-    location: 'Ciudad de México',
+    location: 'Buenos Aires',
     services: ['Desarrollo de software', 'Consultoría IT', 'Soporte técnico'],
     capabilities: ['Trabajo remoto', '24/7 disponible', 'Certificaciones'],
     rating: 4.8,
@@ -184,8 +180,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
     ],
     description: 'Empresa especializada en desarrollo de software y soluciones tecnológicas para PyMEs.',
     contactInfo: {
-      phone: '+52 55 1111 2222',
-      address: 'Av. Reforma 123, Ciudad de México',
+      phone: '+54 11 1111 2222',
+      address: 'Av. Corrientes 123, Buenos Aires',
     },
     offeredServices: [],
     offeredProducts: [],
@@ -194,7 +190,7 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
     id: 'prov_profile_2',
     userId: 'prov2',
     companyName: 'Creative Design Studio',
-    location: 'Guadalajara',
+    location: 'Córdoba',
     services: ['Diseño gráfico', 'Branding', 'Marketing digital'],
     capabilities: ['Trabajo remoto', 'Experiencia internacional', 'Soporte técnico'],
     rating: 4.6,
@@ -205,8 +201,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
     ],
     description: 'Estudio creativo especializado en diseño gráfico y branding para empresas.',
     contactInfo: {
-      phone: '+52 33 3333 4444',
-      address: 'Av. López Mateos 456, Guadalajara',
+      phone: '+54 351 3333 4444',
+      address: 'Av. Colón 456, Córdoba',
     },
     offeredServices: [],
     offeredProducts: [],
@@ -215,7 +211,7 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
     id: 'prov_profile_3',
     userId: 'prov3',
     companyName: 'Digital Marketing Pro',
-    location: 'Monterrey',
+    location: 'Rosario',
     services: ['Marketing digital', 'SEO', 'SEM', 'Redes sociales', 'Content Marketing'],
     capabilities: ['Certificaciones Google', 'Analytics avanzado', 'ROI garantizado'],
     rating: 4.7,
@@ -226,8 +222,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
     ],
     description: 'Agencia de marketing digital especializada en crecimiento de PyMEs.',
     contactInfo: {
-      phone: '+52 81 5555 6666',
-      address: 'Av. Constitución 789, Monterrey',
+      phone: '+54 341 5555 6666',
+      address: 'Av. Pellegrini 789, Rosario',
     },
     offeredServices: [],
     offeredProducts: [],
@@ -247,8 +243,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
     ],
     description: 'Despacho contable con más de 15 años de experiencia en PyMEs.',
     contactInfo: {
-      phone: '+52 55 7777 8888',
-      address: 'Av. Insurgentes 321, Ciudad de México',
+      phone: '+54 11 7777 8888',
+      address: 'Av. Santa Fe 321, Buenos Aires',
     },
     offeredServices: [],
     offeredProducts: [],
@@ -257,7 +253,7 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
     id: 'prov_profile_5',
     userId: 'prov5',
     companyName: 'HR Solutions',
-    location: 'Puebla',
+    location: 'Mendoza',
     services: ['Recursos humanos', 'Reclutamiento', 'Capacitación', 'Coaching ejecutivo'],
     capabilities: ['Psicólogos organizacionales', 'Assessment tools', 'Desarrollo de talento'],
     rating: 4.5,
@@ -268,8 +264,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
     ],
     description: 'Consultoría especializada en recursos humanos y desarrollo organizacional.',
     contactInfo: {
-      phone: '+52 222 9999 0000',
-      address: 'Calle 5 de Mayo 654, Puebla',
+      phone: '+54 261 9999 0000',
+      address: 'Av. San Martín 654, Mendoza',
     },
     offeredServices: [],
     offeredProducts: [],
@@ -278,7 +274,7 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
     id: 'prov_profile_6',
     userId: 'prov6',
     companyName: 'Legal Partners',
-    location: 'Tijuana',
+    location: 'La Plata',
     services: ['Legal', 'Derecho corporativo', 'Derecho laboral', 'Propiedad intelectual'],
     capabilities: ['Abogados certificados', 'Especialización corporativa', 'Consultas 24/7'],
     rating: 4.8,
@@ -289,8 +285,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
     ],
     description: 'Bufete jurídico especializado en derecho empresarial y corporativo.',
     contactInfo: {
-      phone: '+52 664 1111 2222',
-      address: 'Av. Revolución 987, Tijuana',
+      phone: '+54 221 1111 2222',
+      address: 'Av. 7 987, La Plata',
     },
     offeredServices: [],
     offeredProducts: [],
@@ -383,7 +379,7 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
     id: 'prov_profile_11',
     userId: 'prov11',
     companyName: 'Fotografía Profesional',
-    location: 'Guadalajara',
+    location: 'Córdoba',
     services: ['Fotografía', 'Video producción', 'Fotografía de eventos', 'Branding visual'],
     capabilities: ['Equipo profesional', 'Post-producción', 'Drones', 'Estudio propio'],
     rating: 4.8,
@@ -423,7 +419,8 @@ const sampleProveedorProfiles: ProveedorProfile[] = [
   },
 ];
 
-// Datos de ejemplo para matches
+// Datos de ejemplo para matches (no utilizados)
+/*
 const sampleMatches: Match[] = [
   {
     id: 'match_1_1',
@@ -444,6 +441,7 @@ const sampleMatches: Match[] = [
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15).toISOString(),
   },
 ];
+*/
 
 // Datos de ejemplo para chats
 const sampleChats: Chat[] = [
@@ -551,7 +549,8 @@ const sampleMessages: ChatMessage[] = [
   },
 ];
 
-// Datos de ejemplo para negocios
+// Datos de ejemplo para negocios (no utilizados)
+/*
 const sampleBusinesses: Business[] = [
   {
     id: 'business1',
@@ -678,8 +677,10 @@ const sampleBusinesses: Business[] = [
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 25).toISOString(),
   },
 ];
+*/
 
-// Datos de ejemplo para reseñas
+// Datos de ejemplo para reseñas (no utilizados)
+/*
 const sampleReviews: Review[] = [
   {
     id: 'review1',
@@ -818,6 +819,7 @@ const sampleReviews: Review[] = [
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString(),
   },
 ];
+*/
 
 // Función para inicializar todos los datos
 export const initializeSampleData = (): void => {
@@ -866,14 +868,14 @@ export const initializeSampleData = (): void => {
     //   }
     // });
 
-    // Guardar matches
-    sampleMatches.forEach(match => {
-      try {
-        dataPersistenceService.matches.createMatch(match);
-      } catch (error) {
-        console.error('Error al crear match:', match.id, error);
-      }
-    });
+    // Guardar matches (comentado - no se crean matches automáticamente)
+    // sampleMatches.forEach(match => {
+    //   try {
+    //     dataPersistenceService.matches.createMatch(match);
+    //   } catch (error) {
+    //     console.error('Error al crear match:', match.id, error);
+    //   }
+    // });
 
     // No crear chats automáticamente - se crearán cuando el usuario envíe mensajes
     // sampleChats.forEach(chat => {
@@ -1132,7 +1134,7 @@ export const getDataStats = (): Record<string, number> => {
   };
 };
 
-export default {
+const dataInitializationService = {
   initializeSampleData,
   initializeServicesAndProducts,
   initializeChatsAndMessages,
@@ -1145,3 +1147,5 @@ export default {
   hasData,
   getDataStats,
 };
+
+export default dataInitializationService;

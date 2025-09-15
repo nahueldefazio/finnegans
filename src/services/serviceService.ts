@@ -243,7 +243,7 @@ export const updateProveedorWithService = async (userId: string, service: Servic
           services: [],
           capabilities: [],
           pricing: [],
-          location: 'México',
+          location: 'Argentina',
           description: 'Proveedor del sistema para servicios agregados directamente',
           contactInfo: {
             phone: '',
@@ -351,7 +351,7 @@ export const updateProveedorWithProduct = async (userId: string, product: Produc
           services: [],
           capabilities: [],
           pricing: [],
-          location: 'México',
+          location: 'Argentina',
           description: 'Proveedor del sistema para servicios agregados directamente',
           contactInfo: {
             phone: '',

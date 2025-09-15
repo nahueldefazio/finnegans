@@ -48,7 +48,7 @@ const SimpleAddServicePage: React.FC = () => {
     pricing: {
       minPrice: 0,
       maxPrice: 0,
-      currency: 'MXN',
+      currency: 'USD',
       unit: 'por hora',
     },
     availability: {
@@ -223,7 +223,7 @@ const SimpleAddServicePage: React.FC = () => {
         pricing: {
           minPrice: 0,
           maxPrice: 0,
-          currency: 'MXN',
+          currency: 'USD',
           unit: 'por hora',
         },
         availability: {
@@ -342,9 +342,19 @@ const SimpleAddServicePage: React.FC = () => {
                 <TextField
                   fullWidth
                   type="number"
-                  label="Precio Mínimo"
+                  label="Precio Mínimo (USD)"
                   value={formData.pricing.minPrice}
-                  onChange={(e) => handleNestedInputChange('pricing', 'minPrice', Number(e.target.value))}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '' || /^\d+$/.test(value)) {
+                      handleNestedInputChange('pricing', 'minPrice', value === '' ? 0 : Number(value));
+                    }
+                  }}
+                  inputProps={{ 
+                    min: 0,
+                    pattern: '[0-9]*',
+                    inputMode: 'numeric'
+                  }}
                   required
                 />
               </Grid>
@@ -353,9 +363,19 @@ const SimpleAddServicePage: React.FC = () => {
                 <TextField
                   fullWidth
                   type="number"
-                  label="Precio Máximo"
+                  label="Precio Máximo (USD)"
                   value={formData.pricing.maxPrice}
-                  onChange={(e) => handleNestedInputChange('pricing', 'maxPrice', Number(e.target.value))}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '' || /^\d+$/.test(value)) {
+                      handleNestedInputChange('pricing', 'maxPrice', value === '' ? 0 : Number(value));
+                    }
+                  }}
+                  inputProps={{ 
+                    min: 0,
+                    pattern: '[0-9]*',
+                    inputMode: 'numeric'
+                  }}
                   required
                 />
               </Grid>

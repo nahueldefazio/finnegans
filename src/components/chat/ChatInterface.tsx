@@ -224,36 +224,55 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ chat, otherUser }) => {
       display: 'flex', 
       flexDirection: 'column',
       overflow: 'hidden',
-      maxHeight: '100%'
+      maxHeight: '100%',
+      borderRadius: 3,
+      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+      border: '1px solid',
+      borderColor: 'divider'
     }}>
       {/* Header */}
       <Paper sx={{ 
-        p: 2, 
-        borderRadius: 0,
+        p: 3, 
+        borderRadius: '12px 12px 0 0',
         flexShrink: 0,
-        zIndex: 1
+        zIndex: 1,
+        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%)',
+        borderBottom: '1px solid',
+        borderColor: 'divider'
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box>
-            <Typography variant="h6">
+            <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5 }}>
               Chat con {otherUser.name}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {otherUser.type === 'pyme' ? 'PyME' : 'Proveedor'}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: 'auto%' }}>
+              <Chip 
+                label={otherUser.type === 'pyme' ? 'PyME' : 'Proveedor'}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
               {chat.status === 'closed' && (
                 <Chip 
                   label="Cerrado" 
                   size="small" 
                   color="warning" 
-                  sx={{ ml: 1 }} 
+                  variant="outlined"
                 />
               )}
-            </Typography>
+            </Box>
           </Box>
           {chat.status !== 'closed' && (
             <IconButton
               onClick={handleMenuOpen}
               size="small"
+              sx={{
+                bgcolor: 'primary.main',
+                color: 'white',
+                '&:hover': {
+                  bgcolor: 'primary.dark',
+                }
+              }}
             >
               <MoreVertIcon />
             </IconButton>
@@ -275,7 +294,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ chat, otherUser }) => {
         position: 'relative', 
         flex: 1,
         minHeight: 0,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        bgcolor: 'grey.50'
       }}>
         <CustomScrollbar
           ref={messagesContainerRef}
@@ -283,11 +303,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ chat, otherUser }) => {
           sx={{
             height: '100%',
             overflow: 'auto',
-            p: 2,
-            bgcolor: 'grey.50',
+            p: 3,
             scrollbarWidth: '8px',
-            scrollbarThumbColor: 'rgba(25, 118, 210, 0.5)',
-            scrollbarThumbHoverColor: 'rgba(25, 118, 210, 0.7)',
+            scrollbarThumbColor: 'rgba(99, 102, 241, 0.5)',
+            scrollbarThumbHoverColor: 'rgba(99, 102, 241, 0.7)',
             scrollbarTrackColor: 'rgba(0, 0, 0, 0.1)',
             // Mejorar la experiencia de scroll
             '&::-webkit-scrollbar': {
@@ -298,10 +317,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ chat, otherUser }) => {
               borderRadius: '4px',
             },
             '&::-webkit-scrollbar-thumb': {
-              background: 'rgba(25, 118, 210, 0.5)',
+              background: 'rgba(99, 102, 241, 0.5)',
               borderRadius: '4px',
               '&:hover': {
-                background: 'rgba(25, 118, 210, 0.7)',
+                background: 'rgba(99, 102, 241, 0.7)',
               },
             },
           }}
@@ -352,12 +371,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ chat, otherUser }) => {
       {/* Message Input */}
       {chat.status !== 'closed' ? (
         <Paper sx={{ 
-          p: 2, 
-          borderRadius: 0,
+          p: 3, 
+          borderRadius: '0 0 12px 12px',
           flexShrink: 0,
-          zIndex: 1
+          zIndex: 1,
+          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(139, 92, 246, 0.02) 100%)',
+          borderTop: '1px solid',
+          borderColor: 'divider'
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 2 }}>
             <TextField
               fullWidth
               multiline
@@ -367,40 +389,89 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ chat, otherUser }) => {
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               variant="outlined"
-              size="small"
+              size="medium"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 3,
+                  backgroundColor: 'white',
+                  '&:hover': {
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'primary.main',
+                    },
+                  },
+                },
+              }}
             />
             
-            {user?.type === 'proveedor' && (
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              {user?.type === 'proveedor' && (
+                <IconButton
+                  color="primary"
+                  onClick={() => setQuoteDialogOpen(true)}
+                  title="Enviar cotización"
+                  sx={{
+                    bgcolor: 'primary.main',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: 'primary.dark',
+                    }
+                  }}
+                >
+                  <QuoteIcon />
+                </IconButton>
+              )}
+              
+              <IconButton 
+                color="primary" 
+                title="Adjuntar archivo"
+                sx={{
+                  bgcolor: 'grey.100',
+                  '&:hover': {
+                    bgcolor: 'grey.200',
+                  }
+                }}
+              >
+                <AttachFileIcon />
+              </IconButton>
+              
               <IconButton
                 color="primary"
-                onClick={() => setQuoteDialogOpen(true)}
-                title="Enviar cotización"
+                onClick={handleSendMessage}
+                disabled={!newMessage.trim()}
+                sx={{
+                  bgcolor: 'primary.main',
+                  color: 'white',
+                  '&:hover': {
+                    bgcolor: 'primary.dark',
+                  },
+                  '&:disabled': {
+                    bgcolor: 'grey.300',
+                    color: 'grey.500',
+                  }
+                }}
               >
-                <QuoteIcon />
+                <SendIcon />
               </IconButton>
-            )}
-            
-            <IconButton color="primary" title="Adjuntar archivo">
-              <AttachFileIcon />
-            </IconButton>
-            
-            <IconButton
-              color="primary"
-              onClick={handleSendMessage}
-              disabled={!newMessage.trim()}
-            >
-              <SendIcon />
-            </IconButton>
+            </Box>
           </Box>
         </Paper>
       ) : (
-        <Paper sx={{ p: 2, borderRadius: 0, bgcolor: 'grey.100' }}>
-          <Box sx={{ textAlign: 'center', py: 1 }}>
-            <Typography variant="body2" color="text.secondary">
-              Esta conversación ha sido cerrada
+        <Paper sx={{ 
+          p: 3, 
+          borderRadius: '0 0 12px 12px', 
+          bgcolor: 'grey.100',
+          borderTop: '1px solid',
+          borderColor: 'divider'
+        }}>
+          <Box sx={{ textAlign: 'center', py: 2 }}>
+            <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 500 }}>
+              🔒 Esta conversación está cerrada
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              No puedes enviar más mensajes en esta conversación
             </Typography>
             {chat.closeReason && (
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
                 Motivo: {chat.closeReason}
               </Typography>
             )}

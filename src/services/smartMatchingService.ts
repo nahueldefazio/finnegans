@@ -1,6 +1,5 @@
-import { PyMEProfile, ProveedorProfile, Service, Product } from '../types';
+import { ProveedorProfile, Service, Product } from '../types';
 import { dataPersistenceService } from './dataPersistenceService';
-import { servicePersistenceService, productPersistenceService } from './serviceService';
 import { searchServices, searchProducts } from './matchingService';
 
 export interface SmartMatchResult {
@@ -40,12 +39,10 @@ export const getUserNeeds = (userId: string): UserNeeds | null => {
       const allPyMEProfiles = dataPersistenceService.pymeProfiles.getAllProfiles();
       if (allPyMEProfiles.length > 0) {
         pymeProfile = allPyMEProfiles[0];
-        console.log('Usando perfil PyME por defecto:', pymeProfile.companyName);
       }
     }
 
     if (!pymeProfile) {
-      console.log('No se encontró ningún perfil PyME');
       return null;
     }
 
@@ -58,7 +55,6 @@ export const getUserNeeds = (userId: string): UserNeeds | null => {
       location: pymeProfile.location || '',
     };
   } catch (error) {
-    console.error('Error getting user needs:', error);
     return null;
   }
 };
@@ -215,16 +211,10 @@ export const findSmartMatches = async (userId: string): Promise<SmartMatchResult
   try {
     const userNeeds = getUserNeeds(userId);
     if (!userNeeds) {
-      console.log('No se encontraron necesidades del usuario');
       return [];
     }
 
-    console.log('🔍 Buscando matches inteligentes para:', userNeeds);
-
     const matches: SmartMatchResult[] = [];
-    
-    console.log('📊 Presupuesto del usuario:', userNeeds.budget);
-    console.log('📍 Ubicación del usuario:', userNeeds.location);
 
     // Usar la misma lógica de búsqueda que la búsqueda general
     // Buscar servicios que coincidan con las necesidades del usuario
@@ -247,8 +237,6 @@ export const findSmartMatches = async (userId: string): Promise<SmartMatchResult
       userNeeds.budget.max // Usar el presupuesto máximo del usuario
     );
     
-    console.log(`🔍 Resultados de búsqueda de servicios: ${serviceResults.length}`);
-    console.log(`🔍 Resultados de búsqueda de productos: ${productResults.length}`);
 
     // Convertir resultados de servicios a SmartMatchResult
     serviceResults.forEach(({ service, proveedor }) => {
@@ -261,15 +249,6 @@ export const findSmartMatches = async (userId: string): Promise<SmartMatchResult
         size: calculateSizeCompatibility(userNeeds.size, service.pricing),
       };
       
-      console.log(`🔍 Análisis detallado para ${service.name}:`);
-      console.log(`   - Necesidades del usuario: [${userNeeds.needs.join(', ')}]`);
-      console.log(`   - Características del servicio: [${service.features.join(', ')}]`);
-      console.log(`   - Presupuesto usuario: $${userNeeds.budget.min}-${userNeeds.budget.max}`);
-      console.log(`   - Precio servicio: $${service.pricing.minPrice}-${service.pricing.maxPrice}`);
-      console.log(`   - Ubicación usuario: ${userNeeds.location}`);
-      console.log(`   - Ubicación servicio: ${service.availability.location}`);
-      console.log(`   - Industria usuario: ${userNeeds.industry}`);
-      console.log(`   - Categoría servicio: ${service.category}`);
 
       // Calcular score total (promedio ponderado)
       const weights = {
@@ -343,12 +322,6 @@ export const findSmartMatches = async (userId: string): Promise<SmartMatchResult
         compatibility.industry * weights.industry +
         compatibility.size * weights.size;
         
-      console.log(`📊 Score para servicio: ${(matchScore * 100).toFixed(1)}%`);
-      console.log(`   - Necesidades: ${(compatibility.needs * 100).toFixed(1)}%`);
-      console.log(`   - Presupuesto: ${(compatibility.budget * 100).toFixed(1)}%`);
-      console.log(`   - Ubicación: ${(compatibility.location * 100).toFixed(1)}%`);
-      console.log(`   - Industria: ${(compatibility.industry * 100).toFixed(1)}%`);
-      console.log(`   - Tamaño: ${(compatibility.size * 100).toFixed(1)}%`);
 
       if (matchScore > 0.1) { // Reducir umbral de 30% a 10%
         const reasons: string[] = [];
@@ -383,14 +356,9 @@ export const findSmartMatches = async (userId: string): Promise<SmartMatchResult
     // Ordenar por score de matching (mayor a menor)
     matches.sort((a, b) => b.matchScore - a.matchScore);
 
-    console.log(`🎯 Encontrados ${matches.length} matches inteligentes`);
-    matches.forEach((match, index) => {
-      console.log(`${index + 1}. ${match.service.name} - Score: ${(match.matchScore * 100).toFixed(1)}% - Razones: ${match.reasons.join(', ')}`);
-    });
 
     return matches;
   } catch (error) {
-    console.error('Error finding smart matches:', error);
     return [];
   }
 };
